@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Stars, ChevronRight, ChevronLeft, Gift, Paperclip } from "lucide-react";
 
-// Steps: 0 = Landing, 1 = Loading, 2 = GiftBox, 3 = Greeting, 4 = Gallery, 5 = Wishes, 6 = Credits
+// Steps: 0 = Landing, 1 = Greeting, 2 = Gallery, 3 = Wishes, 4 = Credits
 
 export default function BirthdayApp() {
   const [step, setStep] = useState(0);
@@ -18,12 +18,10 @@ export default function BirthdayApp() {
 
       <AnimatePresence mode="wait">
         {step === 0 && <Landing key="landing" onNext={nextStep} />}
-        {step === 1 && <Loading key="loading" onNext={nextStep} />}
-        {step === 2 && <GiftBox key="gift" onNext={nextStep} />}
-        {step === 3 && <Greeting key="greeting" onNext={nextStep} />}
-        {step === 4 && <Gallery key="gallery" onNext={nextStep} />}
-        {step === 5 && <Wishes key="wishes" onNext={nextStep} />}
-        {step === 6 && <Credits key="credits" />}
+        {step === 1 && <Greeting key="greeting" onNext={nextStep} />}
+        {step === 2 && <Gallery key="gallery" onNext={nextStep} />}
+        {step === 3 && <Wishes key="wishes" onNext={nextStep} />}
+        {step === 4 && <Credits key="credits" />}
       </AnimatePresence>
     </div>
   );
@@ -34,13 +32,12 @@ function Landing({ onNext }: { onNext: () => void }) {
   const [sparkles, setSparkles] = useState<{ x: string; y: string; scale: number; duration: number }[]>([]);
 
   useEffect(() => {
-    const generated = [...Array(12)].map(() => ({
+    setSparkles([...Array(15)].map(() => ({
       x: Math.random() * 100 + "%",
       y: Math.random() * 100 + "%",
       scale: Math.random() * 0.5 + 0.5,
       duration: Math.random() * 3 + 2,
-    }));
-    setSparkles(generated);
+    })));
   }, []);
 
   return (
@@ -49,710 +46,542 @@ function Landing({ onNext }: { onNext: () => void }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, scale: 1.1, filter: "blur(10px)" }}
       transition={{ duration: 0.8 }}
-      className="z-10 flex flex-col items-center gap-12 relative w-full h-full min-h-screen justify-center overflow-hidden"
+      className="z-10 flex flex-col items-center gap-12 relative w-full h-full min-h-screen justify-center overflow-hidden bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-pink-50 via-white to-pink-50"
     >
-      {/* Floating Sparkles Background */}
+      {/* Dynamic Background Particles */}
       <div className="absolute inset-0 pointer-events-none">
         {sparkles.map((s, i) => (
           <motion.div
             key={i}
-            className="absolute text-pink-200 opacity-40"
-            initial={{ 
-              x: s.x, 
-              y: s.y,
-              scale: s.scale
-            }}
+            className="absolute text-pink-300 opacity-30"
+            initial={{ x: s.x, y: s.y, scale: s.scale }}
             animate={{ 
-              y: [null, "-20px", "20px", "0px"],
-              opacity: [0.2, 0.5, 0.2]
+              y: [null, "-40px", "40px", "0px"],
+              rotate: [0, 45, -45, 0],
+              opacity: [0.2, 0.5, 0.2] 
             }}
-            transition={{ 
-              duration: s.duration, 
-              repeat: Infinity, 
-              ease: "easeInOut" 
-            }}
+            transition={{ duration: s.duration, repeat: Infinity, ease: "easeInOut" }}
           >
-            {i % 2 === 0 ? <Heart size={24} fill="currentColor" /> : <Stars size={24} />}
+            {i % 3 === 0 ? <Heart size={24} fill="currentColor" /> : <Stars size={24} />}
           </motion.div>
         ))}
       </div>
 
-      {/* Decorative Corners */}
-      <div className="absolute top-0 left-0 p-8 text-pink-200 hidden md:block">
-        <motion.div animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }}>
-          <Stars size={64} className="opacity-20" />
-        </motion.div>
-      </div>
-      <div className="absolute bottom-0 right-0 p-8 text-pink-200 hidden md:block">
-        <motion.div animate={{ rotate: -360 }} transition={{ duration: 25, repeat: Infinity, ease: "linear" }}>
-          <Stars size={80} className="opacity-20" />
-        </motion.div>
-      </div>
-
-      {/* Peeking Cat */}
       <motion.div 
-        className="absolute left-[-20px] top-1/2 -translate-y-1/2 text-6xl opacity-30 select-none hidden lg:block"
-        animate={{ x: [0, 20, 0] }}
-        transition={{ duration: 4, repeat: Infinity }}
+        animate={{ y: [0, -10, 0] }} 
+        transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }} 
+        className="z-20 text-center"
       >
-        🐱
-      </motion.div>
-
-      <motion.div
-        animate={{ y: [0, -10, 0] }}
-        transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-        className="z-20"
-      >
-        <h1 className="text-4xl md:text-6xl font-black text-center bg-clip-text text-transparent bg-gradient-to-r from-pink-primary via-pink-400 to-pink-light max-w-2xl drop-shadow-sm px-4">
-          {isOpen ? "A special gift for you..." : "A surprise is waiting!"}
-        </h1>
+        <motion.h1 
+          className="text-5xl md:text-7xl font-black bg-clip-text text-transparent bg-gradient-to-r from-pink-primary via-pink-400 to-pink-primary bg-[length:200%_auto] animate-gradient-x max-w-2xl drop-shadow-md px-4"
+          style={{ lineHeight: 1.2 }}
+        >
+          {isOpen ? "A Lifetime of Happiness..." : "A Special Surprise Awaits!"}
+        </motion.h1>
         {!isOpen && (
-          <p className="text-pink-primary/40 text-center mt-2 font-medium tracking-widest uppercase text-xs">
-            Personal & Confidential
-          </p>
+          <motion.p 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            className="text-pink-primary/40 mt-4 font-bold tracking-[0.5em] uppercase text-[10px]"
+          >
+            Press the seal to begin
+          </motion.p>
         )}
       </motion.div>
 
-      {/* Envelope Container */}
       <motion.div 
-        className="relative w-80 h-56 cursor-pointer z-30"
+        className="relative w-80 h-52 cursor-pointer z-30 group mt-20"
         style={{ perspective: "1500px" }}
         onClick={() => !isOpen && setIsOpen(true)}
-        whileHover={!isOpen ? { scale: 1.05, rotate: 1 } : {}}
-        whileTap={!isOpen ? { scale: 0.95 } : {}}
-        transition={{ type: "spring", stiffness: 400, damping: 25 }}
       >
-        {/* Envelope Shadow (Dynamic) */}
-        <div className="absolute -inset-4 bg-pink-primary/10 rounded-full blur-3xl opacity-50 z-0 animate-pulse" />
-
-        {/* Envelope Back (Inside) */}
-        <div className="absolute inset-0 bg-pink-600 rounded-lg shadow-inner overflow-hidden">
-          <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:10px_10px]" />
+        {/* Soft Aura Glow */}
+        <div className="absolute -inset-20 bg-pink-primary/10 rounded-full blur-[120px] group-hover:bg-pink-primary/20 transition-all duration-1000" />
+        
+        {/* ENVELOPE BACK WALL */}
+        <div className="absolute inset-0 bg-pink-600 rounded-2xl shadow-xl overflow-hidden border border-pink-700/20">
+          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_20%_20%,_#fff_1px,_transparent_1px)] bg-[length:15px_15px]" />
+          <div className="absolute inset-0 bg-gradient-to-tr from-pink-700/20 to-transparent" />
         </div>
         
-        {/* Letter inside */}
+        {/* THE LETTER (Fully hidden inside initially) */}
         <motion.div 
-          className="absolute left-4 right-4 bg-[#fffaf0] rounded-sm p-6 flex flex-col items-center justify-center gap-3 shadow-[0_4px_25px_rgba(0,0,0,0.15)] border-2 border-[#f3e5ab] relative overflow-hidden"
-          style={{ 
-            height: "200px", 
-            bottom: "16px", 
-            zIndex: 10, 
-            backgroundImage: 'repeating-linear-gradient(#fffaf0 0px, #fffaf0 23px, #f3e5ab 24px)'
+          className="absolute inset-x-4 bg-[#fffefc] rounded-xl p-8 flex flex-col items-center justify-start gap-4 shadow-2xl border border-pink-50 z-10"
+          style={{ height: "240px", bottom: "10px" }}
+          initial={{ y: 240, opacity: 0 }}
+          animate={isOpen ? { y: -200, opacity: 1, scale: 1.05, rotate: -1 } : { y: 240, opacity: 0 }}
+          transition={{ 
+            y: { delay: isOpen ? 0.6 : 0, type: "spring", stiffness: 70, damping: 14 },
+            opacity: { delay: isOpen ? 0.6 : 0 },
+            scale: { delay: isOpen ? 0.6 : 0 },
+            rotate: { delay: isOpen ? 0.6 : 0 }
           }}
-          initial={{ y: 0 }}
-          animate={isOpen ? { y: -160 } : { y: 0 }}
-          transition={{ delay: isOpen ? 0.4 : 0, type: "spring", stiffness: 90, damping: 14 }}
-          whileHover={isOpen ? { y: -175, scale: 1.05, rotate: -1 } : {}}
-          onClick={(e) => {
-            if (isOpen) {
-              e.stopPropagation(); // prevent envelope click
-              onNext();
-            }
-          }}
+          whileHover={isOpen ? { scale: 1.08, rotate: 0, y: -210 } : {}}
+          onClick={(e) => { if (isOpen) { e.stopPropagation(); onNext(); } }}
         >
-          {/* Postage Stamp */}
-          <div className="absolute top-2 right-2 w-10 h-12 bg-white/80 border-2 border-dashed border-pink-200 flex items-center justify-center rotate-6 shadow-sm z-20">
-             <Heart size={16} className="text-pink-primary fill-pink-primary opacity-60" />
-          </div>
-
-          <div className="text-pink-primary font-bold text-2xl italic mb-1 z-10 drop-shadow-sm font-serif">Hello, You! ✨</div>
+          {/* Paper Texture Overlay */}
+          <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/felt.png')] rounded-xl" />
           
-          <motion.div
-             animate={{ 
-               scale: [1, 1.15, 1],
-               rotate: [-2, 2, -2]
-             }}
-             transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-             className="z-10"
-          >
-            <Heart className="w-14 h-14 text-pink-primary fill-pink-primary drop-shadow-[0_0_8px_rgba(255,20,147,0.4)]" />
-          </motion.div>
-
-          <div className="flex flex-col items-center gap-1 z-10 bg-white/40 px-3 py-1 rounded-full backdrop-blur-[1px] border border-pink-100">
-             <p className="text-[10px] text-pink- primary font-black tracking-[0.2em] uppercase">Secret Message</p>
-             <p className="text-[9px] text-gray-500 font-bold animate-pulse">TAP TO UNVEIL THE SURPRISE</p>
+          {/* Letter Stamp */}
+          <div className="absolute top-4 right-4 w-10 h-12 bg-white/90 border-2 border-dashed border-pink-50 flex items-center justify-center rotate-12 shadow-sm">
+             <Heart size={18} className="text-pink-primary fill-pink-primary opacity-20" />
           </div>
           
-          {/* Decorative Corner Stars */}
-          <Stars size={14} className="absolute bottom-2 left-2 text-pink-300 opacity-50" />
-          <Stars size={12} className="absolute bottom-1.5 right-1.5 text-pink-300 opacity-50" />
+          <div className="text-center relative z-10 mt-4 h-full flex flex-col items-center">
+            <p className="text-pink-primary font-black text-3xl italic font-serif tracking-tighter mb-4 leading-none" style={{ lineHeight: 1.2 }}>
+              Hello,<br/>Special One!
+            </p>
+            
+            <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ repeat: Infinity, duration: 3 }} className="mb-4">
+              <Heart className="w-14 h-14 text-pink-primary fill-pink-primary drop-shadow-[0_8px_15px_rgba(255,20,147,0.15)]" />
+            </motion.div>
+
+            <div className="mt-auto bg-pink-50/50 px-5 py-2 rounded-full border border-pink-100/50 flex flex-col items-center">
+               <p className="text-[8px] text-pink-primary font-black tracking-[0.4em] uppercase opacity-40">Invitation</p>
+               <p className="text-[7px] text-pink-300 font-bold uppercase animate-pulse">Tap to Open</p>
+            </div>
+          </div>
         </motion.div>
 
-        {/* Envelope Side Flaps */}
+        {/* ENVELOPE FRONT-SIDE FLAPS (Clipped to cover the letter) */}
         <div 
-          className="absolute inset-0 bg-pink-500 rounded-b-lg z-[15] pointer-events-none drop-shadow-md"
-          style={{ clipPath: "polygon(0 0, 50% 55%, 0 100%)" }}
+          className="absolute inset-0 bg-pink-500 rounded-2xl z-[5] pointer-events-none shadow-[inset_0_0_40px_rgba(0,0,0,0.05)]" 
+          style={{ clipPath: "polygon(0 0, 50% 55%, 100% 0, 100% 100%, 0 100%)" }} 
         />
-        <div 
-          className="absolute inset-0 bg-pink-500 rounded-b-lg z-[15] pointer-events-none drop-shadow-md"
-          style={{ clipPath: "polygon(100% 0, 50% 55%, 100% 100%)" }}
-        />
-
-        {/* Envelope Front Pocket */}
-        <div 
-          className="absolute inset-0 bg-gradient-to-br from-pink-400 to-pink-500 rounded-b-lg shadow-[0_-2px_10px_rgba(0,0,0,0.1)] z-20 pointer-events-none"
-          style={{ clipPath: "polygon(0 0, 50% 55%, 100% 0, 100% 100%, 0 100%)" }}
-        >
-          <div className="absolute inset-0 opacity-20 border-t-2 border-white mix-blend-overlay" />
-        </div>
         
-        {/* Envelope Top Flap */}
+        {/* ENVELOPE TOP FLAP */}
         <motion.div 
-          className="absolute top-0 left-0 right-0 h-[65%] origin-top pointer-events-none drop-shadow-xl"
-          style={{ transformStyle: "preserve-3d" }}
-          initial={{ rotateX: 0, zIndex: 30 }}
+          className="absolute top-0 left-0 right-0 h-[60%] origin-top z-30"
+          initial={{ rotateX: 0 }}
           animate={{ rotateX: isOpen ? 180 : 0, zIndex: isOpen ? 0 : 30 }}
-          transition={{ 
-            rotateX: { duration: 0.6, ease: [0.4, 0, 0.2, 1] },
-            zIndex: { delay: isOpen ? 0.2 : 0 } 
-          }}
+          transition={{ rotateX: { duration: 0.8, ease: [0.4, 0, 0.2, 1] } }}
+          style={{ transformStyle: "preserve-3d" }}
         >
-          {/* Front of the flap (visible when closed) */}
+          {/* FLAP FRONT (The Triangle) */}
           <div 
-            className="absolute inset-0 w-full h-full bg-gradient-to-b from-pink-300 to-pink-400 rounded-t-lg flex items-end justify-center pb-4"
+            className="absolute inset-0 bg-pink-400 rounded-t-2xl flex items-end justify-center pb-8 shadow-xl" 
             style={{ clipPath: "polygon(0 0, 100% 0, 50% 100%)", backfaceVisibility: "hidden" }}
           >
-            {/* Wax Seal */}
-            <div className="bg-red-500 w-12 h-12 rounded-full flex items-center justify-center shadow-[inset_0_0_5px_rgba(0,0,0,0.5),0_3px_5px_rgba(0,0,0,0.2)] border border-red-600">
-              <Heart className="w-6 h-6 text-red-100 fill-red-200" />
-            </div>
+            {/* The Seal Button */}
+            <motion.div 
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="bg-red-600 w-16 h-16 rounded-full flex items-center justify-center shadow-[0_8px_20px_rgba(220,38,38,0.4)] border-4 border-red-700/50 cursor-pointer relative z-50 transform translate-y-8"
+            >
+              <Heart size={28} className="text-white fill-white animate-pulse" />
+            </motion.div>
           </div>
-          {/* Back of the flap (visible when open) */}
+          
+          {/* FLAP BACK (Colored pink-100 for contrast) */}
           <div 
-            className="absolute inset-0 w-full h-full bg-pink-200 rounded-t-lg"
+            className="absolute inset-0 bg-pink-100 rounded-t-2xl shadow-inner" 
             style={{ clipPath: "polygon(0 0, 100% 0, 50% 100%)", transform: "rotateX(180deg)", backfaceVisibility: "hidden" }}
           >
-            <div className="w-full h-full opacity-30 bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:10px_10px]" />
+             <div className="w-full h-full opacity-10 bg-[radial-gradient(#db2777_1px,transparent_1px)] [background-size:12px_12px]" />
           </div>
         </motion.div>
       </motion.div>
 
-      <motion.p 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="text-pink-light font-bold animate-bounce mt-4 z-20 flex items-center gap-2"
-      >
-        {isOpen ? "Tap the letter to continue ✨" : "Click the wax seal to open 💌"}
-      </motion.p>
-    </motion.div>
-  );
-}
-
-function GiftBox({ onNext }: { onNext: () => void }) {
-  const [isGlowed, setIsGlowed] = useState(false);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0, scale: 1.5, filter: "blur(20px)" }}
-      className="z-10 flex flex-col items-center justify-center p-8 min-h-screen relative overflow-hidden w-full bg-gradient-to-b from-pink-50 via-white to-pink-50"
-    >
-      {/* Intense Radial Glow Background */}
-      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-center pointer-events-none">
-        <motion.div 
-          animate={{ 
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.6, 0.3]
-          }}
-          transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-          className="w-[500px] h-[500px] bg-pink-300 rounded-full blur-[100px]"
-        />
-      </div>
-
-      {/* Floating Sparkles */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[...Array(15)].map((_, i) => (
-          <motion.div
-            key={i}
-            initial={{ 
-              x: Math.random() * 100 + "%", 
-              y: Math.random() * 100 + "%",
-              scale: 0
-            }}
-            animate={{ 
-              scale: [0, 1, 0],
-              y: [null, "-50px"] 
-            }}
-            transition={{ 
-              duration: 2 + Math.random() * 2, 
-              repeat: Infinity,
-              delay: Math.random() * 2
-            }}
-            className="absolute text-pink-primary opacity-40"
-          >
-            <Stars size={Math.random() * 20 + 10} />
-          </motion.div>
-        ))}
-      </div>
-
-      <motion.div
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="text-center mb-16 z-10"
-      >
-        <h2 className="text-4xl md:text-6xl font-black text-pink-primary tracking-tight mb-4">
-           You've Unlocked a Gift! 🎁
-        </h2>
-        <p className="text-pink-light font-bold uppercase tracking-[0.4em] text-xs">Tap the box to open your surprise</p>
-      </motion.div>
-
-      {/* Magical Gift Box */}
-      <motion.div
-        whileHover={{ scale: 1.05, rotate: 2 }}
-        whileTap={{ scale: 0.9 }}
-        onClick={onNext}
-        className="relative w-64 h-64 cursor-pointer z-20 group"
-      >
-        {/* Aura Glow */}
-        <div className="absolute -inset-10 bg-pink-primary/20 rounded-full blur-3xl group-hover:bg-pink-primary/30 transition-all duration-500 animate-pulse" />
-        
-        {/* Box Body */}
-        <div className="absolute inset-x-4 bottom-0 h-40 bg-pink-primary rounded-lg shadow-2xl relative overflow-hidden border-2 border-pink-600">
-           {/* Box stripes/texture */}
-           <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_20%_20%,_#fff_1px,_transparent_1px)] bg-[length:15px_15px]" />
-           {/* Ribbon around box */}
-           <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-8 bg-pink-300 shadow-md z-10 border-x border-pink-400" />
-        </div>
-
-        {/* Box Lid */}
-        <motion.div 
-           animate={{ y: [0, -5, 0] }}
-           transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-           className="absolute inset-x-0 top-16 h-12 bg-pink-primary rounded-md shadow-lg z-20 border-2 border-pink-600"
-        >
-           {/* Ribbon on lid */}
-           <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-8 bg-pink-300 shadow-sm border-x border-pink-400" />
-           {/* Bow */}
-           <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-16 h-12 flex relative">
-              <div className="w-10 h-10 bg-pink-300 border-2 border-pink-400 rounded-full rotate-45 flex-shrink-0 -mr-4 shadow-md" />
-              <div className="w-10 h-10 bg-pink-300 border-2 border-pink-400 rounded-full -rotate-45 flex-shrink-0 -ml-4 shadow-md" />
-           </div>
-        </motion.div>
-
-        {/* Sparkle effects emanating from box */}
-        <motion.div
-           animate={{ 
-             scale: [0.8, 1.2, 0.8],
-             opacity: [0.5, 1, 0.5]
-           }}
-           transition={{ repeat: Infinity, duration: 1.5 }}
-           className="absolute -top-16 left-1/2 -translate-x-1/2 text-5xl pointer-events-none"
-        >
-           ✨
-        </motion.div>
-      </motion.div>
-
-      <motion.div
-        animate={{ opacity: [0.4, 0.8, 0.4] }}
+      <motion.div 
+        animate={{ opacity: [0.3, 0.8, 0.3] }} 
         transition={{ repeat: Infinity, duration: 2 }}
-        className="mt-16 z-10 flex flex-col items-center gap-2"
+        className="mt-8 z-20 flex flex-col items-center gap-3"
       >
+        <p className="text-pink-primary font-black uppercase tracking-[0.4em] text-[10px]">{isOpen ? "Your adventure awaits..." : "Open the secret message"}</p>
         <div className="flex gap-2">
-           {[...Array(3)].map((_, i) => (
-             <Heart key={i} size={16} fill="currentColor" className="text-pink-primary" />
-           ))}
+          {[...Array(3)].map((_, i) => <div key={i} className="w-1.5 h-1.5 rounded-full bg-pink-200" />)}
         </div>
-        <p className="text-pink-primary font-black uppercase tracking-[0.2em] text-[10px]">What's inside?</p>
       </motion.div>
     </motion.div>
   );
 }
 
-function Loading({ onNext }: { onNext: () => void }) {
-  useEffect(() => {
-    const timer = setTimeout(onNext, 5500);
-    return () => clearTimeout(timer);
-  }, [onNext]);
+function Greeting({ onNext }: { onNext: () => void }) {
+  const [isOpened, setIsOpened] = useState(false);
+  const [showCake, setShowCake] = useState(false);
+  const [confetti, setConfetti] = useState<{ id: number; x: number; y: number; color: string; scale: number; rotate: number }[]>([]);
 
-  // Ease: smooth deceleration like a feather landing
-  const dropEase = [0.16, 1, 0.3, 1] as const;
-
-  // Balloon data
-  const balloons = [
-    { color: "#ffc8dd", size: 40, left: "10%", delay: 0.5, duration: 4.5 },
-    { color: "#bde0fe", size: 50, left: "25%", delay: 1.2, duration: 5.0 },
-    { color: "#fcf6bd", size: 45, left: "45%", delay: 0.2, duration: 4.2 },
-    { color: "#d8f3dc", size: 38, left: "65%", delay: 1.8, duration: 4.8 },
-    { color: "#cdb4db", size: 42, left: "85%", delay: 0.8, duration: 4.0 },
-    { color: "#ffafcc", size: 46, left: "15%", delay: 2.5, duration: 5.2 },
-    { color: "#a2d2ff", size: 35, left: "75%", delay: 3.1, duration: 4.3 },
-  ];
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.6 }}
-      className="z-10 flex flex-col items-center justify-center p-8 gap-12 min-h-screen relative overflow-hidden w-full bg-gradient-to-b from-white via-pink-50/20 to-white"
-    >
-      {/* Background Balloons */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        {balloons.map((b, i) => (
-          <motion.div
-            key={i}
-            initial={{ y: "120vh", opacity: 0.7 }}
-            animate={{ 
-              y: "-20vh",
-              x: [0, 20, -20, 0],
-              rotate: [0, 8, -8, 0]
-            }}
-            transition={{ 
-              y: { delay: b.delay, duration: b.duration, repeat: Infinity, ease: "linear" },
-              x: { delay: b.delay, duration: b.duration / 2, repeat: Infinity, ease: "easeInOut" },
-              rotate: { delay: b.delay, duration: b.duration / 3, repeat: Infinity, ease: "easeInOut" }
-            }}
-            className="absolute rounded-full shadow-inner border border-white/40"
-            style={{ 
-              left: b.left, 
-              width: b.size, 
-              height: b.size * 1.25, 
-              backgroundColor: b.color,
-              boxShadow: `inset -6px -10px 20px rgba(0,0,0,0.1), inset 6px 10px 20px rgba(255,255,255,0.5)`
-            }}
-          >
-            {/* Balloon string - curved */}
-            <svg className="absolute -bottom-16 left-1/2 -translate-x-1/2 w-4 h-16 opacity-30">
-              <path d="M2,0 Q8,8 2,16 T2,32" stroke="gray" fill="transparent" strokeWidth="1" />
-            </svg>
-            
-            {/* Balloon knot */}
-            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-1.5 bg-inherit border-b border-black/5" />
-          </motion.div>
-        ))}
-      </div>
-
-      <div className="text-center z-10 space-y-2">
-        <motion.h2
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8 }}
-          className="text-3xl md:text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r from-pink-primary via-pink-400 to-pink-light tracking-tight"
-        >
-          Something sweet is coming...
-        </motion.h2>
-        <p className="text-pink-primary/40 font-bold uppercase tracking-[0.3em] text-[10px]">Please wait a moment</p>
-      </div>
-
-      {/* Cake Scene with enhanced details */}
-      <div className="relative flex flex-col items-center z-10" style={{ width: 260, height: 320 }}>
-
-        {/* ── CHERRY ON TOP ── */}
-        <motion.div
-           initial={{ y: -400, opacity: 0, scale: 0 }}
-           animate={{ y: -10, opacity: 1, scale: 1 }}
-           transition={{ delay: 3.8, duration: 0.8, ease: dropEase }}
-           className="z-50 relative mb-[-6px]"
-        >
-           <div className="w-8 h-8 bg-red-600 rounded-full shadow-lg relative border-b-2 border-red-800">
-              <div className="absolute top-1 right-2 w-2 h-2 bg-white/40 rounded-full" />
-              <div className="absolute -top-4 right-1/2 w-1 h-6 border-l-2 border-green-700 rotate-15 rounded-full" />
-           </div>
-        </motion.div>
-
-        {/* ── CANDLE ── */}
-        <motion.div
-          initial={{ y: -340, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 3.0, duration: 1.1, ease: dropEase }}
-          className="z-40 relative mb-[-6px] flex flex-col items-center"
-        >
-          {/* Glow halo */}
-          <motion.div
-            animate={{ scale: [1, 1.4, 1], opacity: [0.3, 0.6, 0.3] }}
-            transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-            className="absolute -top-6 w-12 h-12 rounded-full pointer-events-none"
-            style={{ background: "radial-gradient(circle, #fbbf24 0%, transparent 70%)", filter: "blur(10px)" }}
-          />
-          {/* Flame - more realistic */}
-          <motion.div
-            animate={{
-              scaleY: [1, 1.15, 0.95, 1.1, 1],
-              scaleX: [1, 0.9, 1.05, 0.95, 1],
-              rotate: [-2, 3, -2, 4, -2],
-              y: [0, -1, 1, 0]
-            }}
-            transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
-            className="w-5 h-8 rounded-[50%_50%_35%_35%/60%_60%_40%_40%] relative"
-            style={{
-              background: "linear-gradient(to top, #ea580c, #f59e0b, #fef3c7)",
-              boxShadow: "0 0 15px 5px rgba(245,158,11,0.4)",
-              marginBottom: "-2px",
-            }}
-          >
-             <div className="absolute inset-0 bg-white/20 blur-[2px] rounded-full scale-50" />
-          </motion.div>
-          {/* Candle stick */}
-          <div
-            className="w-4 h-14 rounded-t-full shadow-inner border border-pink-100 flex flex-col overflow-hidden"
-            style={{ background: "linear-gradient(160deg, #fff 30%, #fce7f3 100%)" }}
-          >
-             {[...Array(6)].map((_, i) => (
-                <div key={i} className="w-full h-1 bg-pink-100/40 -rotate-12 mt-1" />
-             ))}
-          </div>
-        </motion.div>
-
-        {/* ── TOP LAYER (smallest) ── */}
-        <motion.div
-          initial={{ y: -320, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 2.1, duration: 1.0, ease: dropEase }}
-          className="z-30 relative flex flex-col items-center"
-          style={{ width: 100 }}
-        >
-          {/* Enhanced Dripping cream */}
-          <div className="flex w-full justify-around px-1" style={{ marginBottom: -3 }}>
-            {[10, 6, 12, 8, 10].map((h, i) => (
-              <div
-                key={i}
-                className="rounded-b-full shadow-sm z-10"
-                style={{ width: 10, height: h, background: "white", border: "1px solid #fef3c7" }}
-              />
-            ))}
-          </div>
-          {/* Cake body */}
-          <div
-            className="w-full shadow-md rounded-b-lg overflow-hidden border-x border-b border-pink-50"
-            style={{ height: 48, background: "linear-gradient(180deg, #fffbeb, #fef3c7)" }}
-          >
-            <div className="w-full h-3 bg-white/60" />
-            <div className="flex justify-around items-center px-2 mt-4">
-              {["#fda4af","#fcd34d","#67e8f9"].map((c, i) => (
-                <div key={i} className="w-2.5 h-2.5 rounded-full shadow-inner" style={{ backgroundColor: c }} />
-              ))}
-            </div>
-          </div>
-        </motion.div>
-
-        {/* ── MIDDLE LAYER ── */}
-        <motion.div
-          initial={{ y: -320, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 1.3, duration: 1.0, ease: dropEase }}
-          className="z-20 relative flex flex-col items-center"
-          style={{ width: 160 }}
-        >
-          <div className="w-full h-3.5 rounded-t-sm" style={{ background: "rgba(255,255,255,0.9)", marginBottom: -1 }} />
-          <div
-            className="w-full shadow-lg rounded-b-lg overflow-hidden border-x border-b border-pink-50"
-            style={{ height: 62, background: "linear-gradient(180deg, #fef3c7, #fffbeb)" }}
-          >
-            {/* Filling line with sprinkles */}
-            <div className="w-full h-2.5 mt-8 flex justify-around items-center opacity-40" style={{ background: "#fde68a" }}>
-               {[...Array(8)].map((_, i) => (
-                  <div key={i} className="w-1 h-1 rounded-full bg-pink-400" />
-               ))}
-            </div>
-          </div>
-        </motion.div>
-
-        {/* ── BOTTOM LAYER ── */}
-        <motion.div
-          initial={{ y: -320, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.4, duration: 1.15, ease: dropEase }}
-          className="z-10 relative flex flex-col items-center"
-          style={{ width: 220 }}
-        >
-          <div className="w-full h-4 rounded-t-sm" style={{ background: "rgba(255,255,255,0.9)", marginBottom: -1 }} />
-          <div
-            className="w-full shadow-xl rounded-b-xl overflow-hidden border-x border-b border-pink-50 relative"
-            style={{ height: 80, background: "linear-gradient(180deg, #fffbeb, #fef3c7)" }}
-          >
-             {/* Sparkle effects on bottom layer */}
-            <div className="flex justify-around items-center px-4 mt-6">
-              {["#f43f5e","#fbbf24","#10b981","#f43f5e","#0ea5e9","#fbbf24"].map((c, i) => (
-                <div key={i} className="w-3 h-3 rounded-full shadow-inner opacity-70" style={{ backgroundColor: c }} />
-              ))}
-            </div>
-          </div>
-        </motion.div>
-
-        {/* ── FROSTING SCALLOP ── */}
-        <motion.div
-          initial={{ scaleX: 0, opacity: 0 }}
-          animate={{ scaleX: 1, opacity: 1 }}
-          transition={{ delay: 0.15, duration: 0.9, ease: "easeOut" }}
-          className="flex justify-around z-10"
-          style={{ width: 236, marginTop: -4, transformOrigin: "50% 50%" }}
-        >
-          {Array.from({ length: 14 }).map((_, i) => (
-            <div key={i} className="rounded-b-full border shadow-sm"
-              style={{ width: 14, height: 14, background: "white", borderColor: "#fde68a22" }} />
-          ))}
-        </motion.div>
-
-        {/* ── PLATE ── */}
-        <motion.div
-          initial={{ scaleX: 0, opacity: 0 }}
-          animate={{ scaleX: 1, opacity: 1 }}
-          transition={{ delay: 0.05, duration: 0.7, ease: "easeOut" }}
-          style={{
-            width: 280, height: 16, marginTop: 6,
-            background: "linear-gradient(to right, #f3f4f6, #ffffff, #f3f4f6)",
-            borderRadius: 9999, transformOrigin: "50% 50%",
-            boxShadow: "0 8px 20px rgba(0,0,0,0.06)",
-            border: "1px solid #e5e7eb"
-          }}
-        />
-      </div>
-
-      {/* Loading bar enhanced with glow */}
-      <div className="space-y-4 flex flex-col items-center">
-        <div className="w-72 h-4 bg-pink-100/50 rounded-full overflow-hidden shadow-inner border border-white relative z-10">
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: "100%" }}
-            transition={{ duration: 5, ease: "linear" }}
-            className="h-full absolute left-0 top-0 shadow-[0_0_15px_rgba(255,20,147,0.5)]"
-            style={{ 
-              background: "linear-gradient(to right, #ff69b4, #ff1493, #ff69b4)",
-            }}
-          />
-        </div>
-        <motion.p 
-           animate={{ opacity: [0.4, 1, 0.4] }}
-           transition={{ repeat: Infinity, duration: 2 }}
-           className="text-[10px] font-black text-pink-primary uppercase tracking-[0.4em]"
-        >
-           Assembling Happiness
-        </motion.p>
-      </div>
-    </motion.div>
-  );
-}
-
-function Wishes({ onNext }: { onNext: () => void }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  const messages = [
-    { text: "Happy Level Up Day!\nSemoga harimu penuh kebahagiaan dan senyum manis. 🥳", from: "Nama Pengirim", color: "bg-[#bde0fe]", rotation: -2, icon: "🐱" }, // Pastel Blue
-    { text: "Terima kasih sudah menjadi orang yang luar biasa!\nJangan lupa senyum hari ini! ✨", from: "Nama Pengirim", color: "bg-[#ffc8dd]", rotation: 3, icon: "😺" }, // Pastel Pink
-    { text: "Semoga semua memori, harapan, dan mimpimu satu per satu bisa tercapai. 🌟", from: "Nama Pengirim", color: "bg-[#fcf6bd]", rotation: -1, icon: "😸" }, // Pastel Yellow
-    { text: "Tetap jadi dirimu sendiri yang menggemaskan!\nYou are loved by many! 🥰", from: "Nama Pengirim", color: "bg-[#d8f3dc]", rotation: 4, icon: "😻" }, // Pastel Green
-    { text: "Enjoy your special day to the fullest!\nSekali lagi, Happy Birthday! ❤️", from: "Nama Pengirim", color: "bg-[#e8ccbf]", rotation: -3, icon: "😽" }, // Pastel Muted Orange/Brown
-  ];
-
-  const handleNextNote = () => {
-    if (currentIndex < messages.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    } else {
-      onNext();
-    }
+  const handleOpenGift = () => {
+    setIsOpened(true);
+    setTimeout(() => {
+      setShowCake(true);
+      // Generate Confetti
+      const colors = ["#ff69b4", "#ff1493", "#ffb6c1", "#ffc0cb", "#ffffff", "#ffd700"];
+      const particles = [...Array(40)].map((_, i) => ({
+        id: i,
+        x: Math.random() * 400 - 200,
+        y: Math.random() * -300 - 100,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        scale: Math.random() * 1 + 0.5,
+        rotate: Math.random() * 360
+      }));
+      setConfetti(particles);
+    }, 450);
   };
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0, scale: 0.8 }}
-      className="z-10 flex flex-col items-center justify-center p-4 w-full h-full min-h-screen"
+      exit={{ opacity: 0, scale: 1.1, filter: "blur(10px)" }}
+      className="z-10 flex flex-col items-center text-center px-6 max-w-lg w-full min-h-screen justify-center py-12 relative overflow-hidden"
     >
-      <div className="relative w-80 h-[32rem] sm:w-full sm:max-w-md md:max-w-2xl h-[34rem] md:h-[36rem] flex items-center justify-center">
+      {/* Background Particles Layer */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        {[...Array(12)].map((_, i) => (
+          <motion.div
+            key={i}
+            animate={{ 
+              opacity: [0, 0.3, 0],
+              y: [0, -200],
+              x: Math.sin(i) * 100,
+            }}
+            transition={{ duration: 5 + i, repeat: Infinity, delay: i * 0.5 }}
+            className="absolute text-pink-100"
+            style={{ left: `${8 + i * 10}%`, top: '80%' }}
+          >
+            <Stars size={12 + i * 4} />
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Confetti Explosion */}
+      <div className="absolute inset-0 pointer-events-none z-50">
+        <AnimatePresence>
+          {confetti.map((p) => (
+            <motion.div
+              key={p.id}
+              initial={{ x: 0, y: 0, opacity: 1, scale: 0 }}
+              animate={{ 
+                x: p.x, 
+                y: p.y, 
+                opacity: 0,
+                scale: p.scale,
+                rotate: p.rotate 
+              }}
+              transition={{ duration: 1.5, ease: "easeOut" }}
+              className="absolute left-1/2 top-1/2 w-4 h-4 rounded-sm"
+              style={{ backgroundColor: p.color }}
+            />
+          ))}
+        </AnimatePresence>
+      </div>
+
+      <motion.div animate={showCake ? { y: -20 } : { y: 0 }} className="space-y-3 mb-10 z-10 relative">
+        <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.2 }}>
+          <h1 className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-pink-primary to-pink-light tracking-tighter pb-2 drop-shadow-sm">
+            HAPPY<br/>BIRTHDAY!
+          </h1>
+        </motion.div>
+        <p className="text-xl md:text-2xl text-gray-700 font-bold bg-white/40 backdrop-blur-sm px-6 py-2 rounded-full border border-white/50 shadow-sm mx-auto w-fit">
+           {showCake ? "Surprise! Best Day Ever! 🥳" : "Something magical is waiting... ✨"}
+        </p>
+      </motion.div>
+
+      {/* Main Interaction Container */}
+      <div className="relative w-72 h-80 flex items-center justify-center mb-10 z-20">
+        <AnimatePresence>
+          {showCake && (
+            <motion.div
+              initial={{ scale: 0, y: 100, opacity: 0, rotate: -10 }}
+              animate={{ scale: 1, y: 0, opacity: 1, rotate: 0 }}
+              transition={{ type: "spring", stiffness: 120, damping: 12 }}
+              className="absolute inset-0 flex flex-col items-center justify-center z-10"
+            >
+              <div className="relative flex flex-col items-center" style={{ width: 230, height: 270 }}>
+                {/* Cake Detail Upgrades */}
+                <div className="w-7 h-7 bg-red-600 rounded-full shadow-[0_4px_10px_rgba(220,38,38,0.5)] relative z-50 mb-[-4px] border-b-2 border-red-800" />
+                <div className="z-40 flex flex-col items-center mb-[-4px]">
+                  <motion.div 
+                    animate={{ 
+                      scale: [1, 1.3, 1], 
+                      opacity: [0.8, 1, 0.8],
+                      boxShadow: ["0 0 10px #fbbf24", "0 0 25px #fbbf24", "0 0 10px #fbbf24"] 
+                    }} 
+                    transition={{ repeat: Infinity, duration: 0.8 }} 
+                    className="w-5 h-8 rounded-full bg-gradient-to-t from-orange-500 via-yellow-400 to-white" 
+                  />
+                  <div className="w-3.5 h-12 bg-gradient-to-r from-pink-200 to-pink-300 rounded-t-sm shadow-inner" />
+                </div>
+                <div className="w-36 h-12 bg-white rounded-t-xl shadow-md border border-pink-50 relative z-30" />
+                <div className="w-48 h-16 bg-pink-primary/10 rounded-xl shadow-lg border border-pink-100 relative z-20 mt-[-4px]" />
+                <div className="w-60 h-20 bg-white rounded-xl shadow-2xl border border-pink-50 relative z-10 mt-[-4px] flex items-center justify-center overflow-hidden">
+                   <div className="absolute inset-0 bg-gradient-to-b from-white via-transparent to-pink-50/20" />
+                   <p className="text-xs font-black text-pink-primary/20 tracking-[0.5em] uppercase">Celebration</p>
+                </div>
+                <div className="w-72 h-5 bg-gray-200 rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.1)] mt-3 border border-white" />
+              </div>
+              {/* Ground Glow */}
+              <div className="absolute -bottom-10 w-64 h-12 bg-pink-primary/10 blur-3xl rounded-full -z-10" />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {!showCake && (
+          <motion.div 
+            onClick={!isOpened ? handleOpenGift : undefined} 
+            className="relative w-60 h-60 cursor-pointer group"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <div className="absolute -inset-12 bg-pink-primary/20 rounded-full blur-[60px] animate-pulse" />
+            <div className="absolute bottom-0 w-full h-[72%] bg-gradient-to-br from-pink-500 to-pink-600 rounded-2xl shadow-2xl border-2 border-pink-700/50 flex justify-center">
+               <div className="w-10 h-full bg-pink-300/80 border-x-2 border-pink-400 shadow-inner" />
+            </div>
+            <motion.div 
+               animate={isOpened ? { y: -450, rotate: 60, x: 150, opacity: 0, scale: 1.5 } : { y: [0, -6, 0] }}
+               transition={{ duration: 1, ease: [0.6, 0.05, -0.01, 0.9] }}
+               className="absolute top-2 w-[112%] left-[-6%] h-[32%] bg-pink-500 rounded-xl shadow-2xl z-20 border-2 border-pink-600 flex justify-center"
+            >
+               <div className="w-10 h-full bg-pink-300 border-x-2 border-pink-400" />
+               <div className="absolute -top-12 flex -space-x-4">
+                  <div className="w-14 h-14 bg-pink-300 rounded-full border-4 border-pink-400 rotate-45 shadow-lg" />
+                  <div className="w-14 h-14 bg-pink-300 rounded-full border-4 border-pink-400 -rotate-45 shadow-lg" />
+               </div>
+            </motion.div>
+            
+            <motion.div animate={{ opacity: [0.5, 1, 0.5] }} transition={{ repeat: Infinity, duration: 1.5 }} className="absolute -bottom-16 left-1/2 -translate-x-1/2 text-pink-primary font-black uppercase text-[10px] tracking-widest bg-white px-6 py-2 rounded-full border-2 border-pink-primary shadow-xl">
+               🎁 Tap to Reveal
+            </motion.div>
+          </motion.div>
+        )}
+      </div>
+
+      <AnimatePresence>
+        {showCake && (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.2 }}
+            className="z-50"
+          >
+            <motion.button
+              whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(219,39,119,0.3)" }}
+              whileTap={{ scale: 0.95 }}
+              onClick={onNext}
+              className="px-14 py-5 bg-gradient-to-r from-pink-primary to-pink-light text-white rounded-full font-black shadow-[0_15px_30px_rgba(219,39,119,0.4)] hover:brightness-110 transition-all cursor-pointer uppercase tracking-[0.2em] text-sm relative overflow-hidden group"
+            >
+              <span className="relative z-10 flex items-center gap-3">
+                See My Memories <ChevronRight className="group-hover:translate-x-1 transition-transform" />
+              </span>
+              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+            </motion.button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
+function Gallery({ onNext }: { onNext: () => void }) {
+  const [index, setIndex] = useState(0);
+  const images = [
+    "https://images.unsplash.com/photo-1582206684807-fcf870f2f359?q=80&w=800&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1496417263034-38ec4f0b665a?q=80&w=800&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1530103043960-ef38714abb15?q=80&w=800&auto=format&fit=crop"
+  ];
+
+  const handleNext = () => setIndex((i) => (i + 1) % images.length);
+  const handlePrev = () => setIndex((i) => (i - 1 + images.length) % images.length);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="z-10 flex flex-col items-center w-full max-w-sm px-6"
+    >
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="text-center mb-8">
+        <h2 className="text-4xl font-black text-pink-primary tracking-tighter mb-2">SWEET MEMORIES</h2>
+        <div className="h-1.5 w-12 bg-pink-primary mx-auto rounded-full" />
+      </motion.div>
+
+      <div className="relative w-full aspect-[3/4] bg-white p-4 pb-16 rounded-md shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] border border-pink-50 mb-12 flex flex-col items-center group">
+        <div className="absolute inset-x-0 -top-6 flex justify-center z-20">
+           <div className="w-16 h-8 bg-pink-100/40 backdrop-blur-sm border border-white/50 rounded-md shadow-sm" />
+        </div>
+        
+        <AnimatePresence mode="wait">
+          <motion.div 
+            key={index} 
+            initial={{ opacity: 0, scale: 0.9, rotate: index % 2 === 0 ? -2 : 2 }} 
+            animate={{ opacity: 1, scale: 1, rotate: 0 }} 
+            exit={{ opacity: 0, scale: 1.1, rotate: 5 }} 
+            transition={{ type: "spring", stiffness: 100, damping: 15 }}
+            className="w-full h-full relative overflow-hidden rounded shadow-inner bg-gray-50"
+          >
+            <img src={images[index]} className="w-full h-full object-cover grayscale-[0.2] hover:grayscale-0 transition-all duration-700 hover:scale-110" alt="Gallery" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+          </motion.div>
+        </AnimatePresence>
+        
+        <div className="absolute bottom-6 left-0 right-0 px-6 flex flex-col items-center">
+          <p className="font-serif italic text-pink-light text-2xl tracking-tight">Our Memory #{index + 1}</p>
+        </div>
+        
+        <div className="absolute top-1/2 -translate-y-1/2 -left-6 -right-6 flex justify-between w-[calc(100%+3rem)] z-30">
+          <motion.button whileHover={{ scale: 1.1, x: -5 }} whileTap={{ scale: 0.9 }} onClick={handlePrev} className="p-4 rounded-full bg-white shadow-xl text-pink-primary cursor-pointer border border-pink-50 active:scale-95 transition-all"><ChevronLeft className="w-6 h-6" /></motion.button>
+          <motion.button whileHover={{ scale: 1.1, x: 5 }} whileTap={{ scale: 0.9 }} onClick={handleNext} className="p-4 rounded-full bg-white shadow-xl text-pink-primary cursor-pointer border border-pink-50 active:scale-95 transition-all"><ChevronRight className="w-6 h-6" /></motion.button>
+        </div>
+      </div>
+
+      <motion.button 
+        whileHover={{ scale: 1.05, y: -2 }} 
+        whileTap={{ scale: 0.95 }} 
+        onClick={onNext} 
+        className="px-12 py-5 bg-black text-white rounded-full font-black shadow-2xl cursor-pointer uppercase tracking-[0.3em] text-[10px] w-full"
+      >
+        Keep Exploring ✨
+      </motion.button>
+    </motion.div>
+  );
+}
+
+function Wishes({ onNext }: { onNext: () => void }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const messages = [
+    { 
+      text: "Happy Birthday to an incredible soul! ✨\n\nMay this year bring you as much joy as you give to everyone around you. You deserve every bit of happiness and more. Keep shining!", 
+      from: "David Adesta", 
+      color: "bg-[#fffef0]", 
+      rotation: -2, 
+      icon: "🐱" 
+    },
+    { 
+      text: "To the person who lights up every room! 🌟\n\nWatching you grow and achieve your dreams is an absolute privilege. Never stop being your authentic, wonderful self. You inspire me every single day!", 
+      from: "David Adesta", 
+      color: "bg-[#fff9fb]", 
+      rotation: 3, 
+      icon: "😺" 
+    },
+    { 
+      text: "Wishing you a day filled with magic! 💖\n\nMay your journey be filled with beautiful moments, meaningful connections, and endless laughter. You have a heart of gold, never forget that.", 
+      from: "David Adesta", 
+      color: "bg-[#f0f9ff]", 
+      rotation: -1, 
+      icon: "😸" 
+    },
+    { 
+      text: "Cheers to another year of greatness! 🎈\n\nYou're not just getting older, you're getting better. Here's to more adventures, more growth, and more reasons to celebrate. Happy Birthday!", 
+      from: "David Adesta", 
+      color: "bg-[#fdf2f8]", 
+      rotation: 4, 
+      icon: "😻" 
+    },
+    { 
+      text: "Stay beautiful inside and out! 🥰\n\nYou are a true masterpiece in progress. I hope today is just the beginning of your best year yet. I'm always rooting for you. Love and light!", 
+      from: "David Adesta", 
+      color: "bg-[#f4fdfa]", 
+      rotation: -3, 
+      icon: "😽" 
+    },
+  ];
+
+  const handleNextNote = () => { currentIndex < messages.length - 1 ? setCurrentIndex(currentIndex + 1) : onNext(); };
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }} 
+      className="z-10 flex flex-col items-center justify-center p-6 w-full h-full min-h-screen relative overflow-hidden"
+    >
+      <div className="absolute inset-0 bg-pink-primary/5 -z-10" />
+      
+      <div className="relative w-full max-w-sm sm:max-w-md h-[34rem] flex items-center justify-center pt-10">
         <AnimatePresence>
           {messages.map((msg, index) => {
-            if (index < currentIndex) return null; // Discarded notes
-
+            if (index < currentIndex) return null;
             const isTop = index === currentIndex;
             const stackedOffset = index - currentIndex;
-
+            
             return (
                <motion.div
                 key={index}
-                className={`absolute inset-0 rounded-2xl border-4 border-slate-800 p-6 sm:p-8 md:p-12 flex flex-col items-center text-center cursor-pointer shadow-[12px_12px_0_rgba(30,41,59,1)] ${msg.color}`}
-                initial={false}
-                animate={{
-                  top: stackedOffset * 8,
-                  right: -stackedOffset * 4,
-                  scale: 1 - stackedOffset * 0.03,
-                  rotate: isTop ? msg.rotation : msg.rotation + (stackedOffset * 2),
-                  zIndex: messages.length - index
+                className={`absolute inset-0 rounded-[2rem] border border-pink-100 p-8 sm:p-12 flex flex-col items-center text-center cursor-pointer shadow-[0_20px_50px_-10px_rgba(0,0,0,0.1)] ${msg.color} backdrop-blur-md`}
+                style={{ 
+                  transformOrigin: "center bottom",
+                  backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.4) 0%, transparent 100%)'
                 }}
-                exit={{ x: -600, y: 100, opacity: 0, rotate: -45, transition: { duration: 0.5 } }}
-                transition={{ type: "spring", stiffness: 150, damping: 20 }}
+                animate={{ 
+                  y: stackedOffset * 12, 
+                  x: stackedOffset * 5, 
+                  scale: 1 - stackedOffset * 0.05, 
+                  rotate: isTop ? msg.rotation : msg.rotation + (stackedOffset * 2.5), 
+                  zIndex: messages.length - index,
+                  opacity: 1 - (stackedOffset * 0.15)
+                }}
+                exit={{ x: -1200, y: 150, rotate: -60, opacity: 0, transition: { duration: 0.7, ease: "easeInOut" } }}
+                transition={{ type: "spring", stiffness: 85, damping: 22 }}
                 onClick={isTop ? handleNextNote : undefined}
-                whileHover={isTop ? { y: -5, x: -2 } : {}}
               >
-                {/* Paperclip */}
-                <Paperclip className="absolute -top-6 right-12 w-12 h-12 text-slate-800 drop-shadow-sm stroke-[3]" />
-
+                {/* Paper Texture Overlay */}
+                <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/felt.png')] rounded-[2rem]" />
+                
+                <Paperclip className="absolute -top-7 right-14 w-16 h-16 text-pink-primary/20 stroke-[2] drop-shadow-sm z-30" />
+                
                 {/* Animated Cat Emoji */}
                 {isTop && (
                   <motion.div
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1, rotate: [-5, 5, -5] }}
+                    initial={{ scale: 0, rotate: -30 }}
+                    animate={{ scale: 1, rotate: [-8, 8, -8] }}
                     transition={{
-                      y: { type: "spring", stiffness: 300, delay: 0.2 },
-                      opacity: { delay: 0.2 },
-                      rotate: { repeat: Infinity, duration: 2, ease: "easeInOut" }
+                      scale: { type: "spring", stiffness: 250, delay: 0.3 },
+                      rotate: { repeat: Infinity, duration: 3, ease: "easeInOut" }
                     }}
-                    className="absolute -top-14 left-8 text-7xl md:text-8xl drop-shadow-lg z-40"
+                    className="absolute -top-16 left-6 text-7xl md:text-9xl drop-shadow-2xl z-50 select-none"
                   >
                     {msg.icon}
                   </motion.div>
                 )}
-
-                {/* Content */}
-                <div className="flex-1 flex flex-col justify-center w-full mt-6">
-                  <p className="font-bold text-slate-800 text-xl sm:text-2xl md:text-3xl lg:text-4xl leading-relaxed whitespace-pre-wrap z-10 px-2">
+                
+                <div className="flex-1 flex flex-col justify-center w-full mt-12 relative z-10 overflow-y-auto custom-scrollbar">
+                  <p className="font-serif italic text-pink-primary/30 text-[10px] tracking-[0.4em] uppercase mb-10">Secret Wish</p>
+                  <p className="font-black text-gray-800 text-xl sm:text-2xl md:text-3xl leading-[1.4] tracking-tight mb-8 whitespace-pre-wrap">
                     {msg.text}
                   </p>
                 </div>
                 
-                {/* From / Signature */}
-                <div className="w-full text-right mt-auto pt-6 border-t-2 border-slate-800/10 z-10 mb-6 md:mb-8">
-                  <p className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1 opacity-60">With Love,</p>
-                  <p className="font-serif italic text-slate-700 text-xl md:text-3xl">
-                    - {msg.from}
-                  </p>
+                <div className="w-full text-right mt-auto pt-6 border-t border-pink-100/50 mb-4 z-10">
+                  <p className="font-serif italic text-pink-primary/60 text-2xl tracking-tighter">— {msg.from}</p>
                 </div>
 
                 {/* Cat Paws holding the letter - More integrated */}
                 {isTop && (
-                  <>
+                  <div className="absolute -bottom-8 inset-x-0 flex justify-between px-8 z-50 pointer-events-none">
                     <motion.div 
-                      initial={{ y: 40 }}
-                      animate={{ y: 0 }}
-                      className="absolute -bottom-10 left-10 sm:left-16 z-50 pointer-events-none scale-90 md:scale-110 origin-bottom"
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      className="scale-90 md:scale-100"
                     >
-                      <div className="relative w-16 h-24 bg-white border-4 border-slate-800 rounded-t-full shadow-lg">
-                        <div className="absolute top-2 left-1/2 -translate-x-1/2 flex gap-1">
-                          <div className="w-3 h-4 bg-pink-100 rounded-full" />
-                          <div className="w-3 h-5 bg-pink-100 rounded-full -translate-y-1" />
-                          <div className="w-3 h-4 bg-pink-100 rounded-full" />
+                      <div className="w-16 h-20 bg-white border-2 border-pink-50 rounded-t-full shadow-lg relative flex flex-col items-center">
+                        <div className="flex gap-1 mt-1.5 px-2">
+                           {[1,2,3].map(i => <div key={i} className="w-3 h-4 bg-pink-100 rounded-full" />)}
                         </div>
-                        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-9 h-7 bg-pink-100 rounded-full" />
+                        <div className="absolute bottom-2 w-10 h-7 bg-pink-50 rounded-full opacity-60" />
                       </div>
                     </motion.div>
 
                     <motion.div 
-                      initial={{ y: 40 }}
-                      animate={{ y: 0 }}
-                      className="absolute -bottom-10 right-10 sm:right-16 z-50 pointer-events-none scale-90 md:scale-110 origin-bottom"
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      className="scale-90 md:scale-100"
                     >
-                      <div className="relative w-16 h-24 bg-white border-4 border-slate-800 rounded-t-full shadow-lg">
-                        <div className="absolute top-2 left-1/2 -translate-x-1/2 flex gap-1">
-                          <div className="w-3 h-4 bg-pink-100 rounded-full" />
-                          <div className="w-3 h-5 bg-pink-100 rounded-full -translate-y-1" />
-                          <div className="w-3 h-4 bg-pink-100 rounded-full" />
+                      <div className="w-16 h-20 bg-white border-2 border-pink-50 rounded-t-full shadow-lg relative flex flex-col items-center">
+                        <div className="flex gap-1 mt-1.5 px-2">
+                           {[1,2,3].map(i => <div key={i} className="w-3 h-4 bg-pink-100 rounded-full" />)}
                         </div>
-                        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-9 h-7 bg-pink-100 rounded-full" />
+                        <div className="absolute bottom-2 w-10 h-7 bg-pink-50 rounded-full opacity-60" />
                       </div>
                     </motion.div>
-                  </>
+                  </div>
                 )}
-
+                
                 {isTop && (
                   <motion.div 
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="absolute bottom-[-40px] left-1/2 -translate-x-1/2 whitespace-nowrap"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="absolute -bottom-16 left-1/2 -translate-x-1/2"
                   >
-                    <p className="text-[10px] md:text-xs font-black text-slate-800 animate-pulse uppercase tracking-[0.3em] bg-white border-2 border-slate-800 px-6 py-2.5 rounded-full shadow-[4px_4px_0_rgba(30,41,59,1)]">
-                      {index === messages.length - 1 ? "Click to Finish" : "Tap to Continue"}
+                    <p className="text-[10px] font-black text-pink-primary/30 uppercase tracking-[0.5em] animate-pulse">
+                      Tap to continue
                     </p>
                   </motion.div>
                 )}
@@ -765,199 +594,26 @@ function Wishes({ onNext }: { onNext: () => void }) {
   );
 }
 
-function Gallery({ onNext }: { onNext: () => void }) {
-  const [index, setIndex] = useState(0);
-  const images = [
-    "https://images.unsplash.com/photo-1582206684807-fcf870f2f359?q=80&w=800&auto=format&fit=crop", // Party
-    "https://images.unsplash.com/photo-1558636508-e0db3814ebd1?q=80&w=800&auto=format&fit=crop", // Flowers
-    "https://images.unsplash.com/photo-1543794327-59a91fb015d8?q=80&w=800&auto=format&fit=crop"  // Birthday aesthetic
-  ];
-
-  const handleNext = () => setIndex((i) => (i + 1) % images.length);
-  const handlePrev = () => setIndex((i) => (i - 1 + images.length) % images.length);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0 }}
-      className="z-10 flex flex-col items-center w-full max-w-[95%] sm:max-w-md px-4"
-    >
-      <motion.h2 
-        initial={{ y: -10, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="text-3xl font-black mb-8 text-pink-primary tracking-tight"
-      >
-        Sweet Memories ✨
-      </motion.h2>
-
-      <div className="relative w-full aspect-[4/5] bg-white p-4 pb-20 rounded-sm shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-pink-50 mb-10 flex flex-col items-center group">
-        {/* Paper texture overlay */}
-        <div className="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] pointer-events-none rounded-sm" />
-        
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, x: 20, rotate: 2 }}
-            animate={{ opacity: 1, x: 0, rotate: 0 }}
-            exit={{ opacity: 0, x: -20, rotate: -2 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-            className="w-full h-full relative"
-          >
-            <img
-              src={images[index]}
-              className="w-full h-full object-cover rounded shadow-inner"
-              alt="Gallery"
-            />
-          </motion.div>
-        </AnimatePresence>
-        
-        {/* Memory Caption Area */}
-        <div className="absolute bottom-6 left-0 right-0 px-6">
-          <div className="flex flex-col items-center">
-            <div className="w-8 h-1 bg-pink-100 rounded-full mb-3" />
-            <p className="font-serif italic text-pink-light text-2xl">
-              Memory No. {index + 1}
-            </p>
-          </div>
-        </div>
-        
-        {/* Navigation Buttons - More integrated */}
-        <div className="absolute top-1/2 -translate-y-1/2 -left-4 -right-4 flex justify-between pointer-events-none">
-          <button 
-            onClick={handlePrev} 
-            className="p-3 rounded-full bg-white/90 backdrop-blur-sm shadow-lg text-pink-primary hover:bg-pink-primary hover:text-white transition-all cursor-pointer border border-pink-50 pointer-events-auto active:scale-95"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-          <button 
-            onClick={handleNext} 
-            className="p-3 rounded-full bg-white/90 backdrop-blur-sm shadow-lg text-pink-primary hover:bg-pink-primary hover:text-white transition-all cursor-pointer border border-pink-50 pointer-events-auto active:scale-95"
-          >
-            <ChevronRight className="w-6 h-6" />
-          </button>
-        </div>
-      </div>
-
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={onNext}
-        className="px-10 py-4 bg-gradient-to-r from-pink-primary to-pink-light text-white rounded-full font-black shadow-[0_10px_20px_rgba(255,20,147,0.3)] hover:shadow-[0_15px_30px_rgba(255,20,147,0.4)] transition-all cursor-pointer uppercase tracking-widest text-sm"
-      >
-        Keep Going ❤️
-      </motion.button>
-    </motion.div>
-  );
-}
-
-function Greeting({ onNext }: { onNext: () => void }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, y: -50 }}
-      transition={{ type: "spring", bounce: 0.4 }}
-      className="z-10 flex flex-col items-center text-center px-6 max-w-lg"
-    >
-      <div className="relative mb-12">
-        <motion.div 
-          animate={{ 
-            rotate: 360,
-            scale: [1, 1.1, 1] 
-          }} 
-          transition={{ 
-            rotate: { repeat: Infinity, duration: 15, ease: "linear" },
-            scale: { repeat: Infinity, duration: 4, ease: "easeInOut" }
-          }}
-          className="relative"
-        >
-          <Stars className="w-32 h-32 text-pink-primary opacity-20" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <motion.div
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ repeat: Infinity, duration: 2 }}
-            >
-              <Gift className="w-16 h-16 text-pink-primary" />
-            </motion.div>
-          </div>
-        </motion.div>
-      </div>
-
-      <motion.h1 
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.2 }}
-        className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-pink-primary to-pink-light mb-6 tracking-tight"
-      >
-        Happy<br/>Birthday!
-      </motion.h1>
-      
-      <motion.p 
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.4 }}
-        className="text-xl md:text-2xl text-gray-600 font-medium mb-12 leading-relaxed"
-      >
-        You make the world shine brighter just by being in it. Have an absolutely magical day! ✨
-      </motion.p>
-
-      <motion.button
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.6 }}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={onNext}
-        className="px-12 py-4 bg-pink-primary text-white rounded-full font-black shadow-xl hover:bg-pink-light transition-all cursor-pointer uppercase tracking-widest text-sm"
-      >
-        See Credits ❤️
-      </motion.button>
-    </motion.div>
-  );
-}
-
 function Credits() {
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="z-10 flex flex-col items-center p-12 bg-white/80 backdrop-blur-md rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-white/50 max-w-xs w-full"
-    >
-      <h2 className="text-sm font-black text-pink-primary mb-10 tracking-[0.3em] uppercase opacity-50">
-        Created With Love
-      </h2>
+    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="z-10 flex flex-col items-center p-14 bg-white/90 backdrop-blur-2xl rounded-[3rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] border border-white max-w-xs w-full relative overflow-hidden">
+      <div className="absolute -top-20 -right-20 w-40 h-40 bg-pink-100/50 rounded-full blur-3xl" />
+      <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-pink-100/50 rounded-full blur-3xl opacity-60" />
       
-      <div className="flex flex-col gap-10 text-center w-full">
+      <h2 className="text-[9px] font-black text-pink-primary mb-14 tracking-[0.5em] uppercase opacity-40">Digital Experience</h2>
+      <div className="flex flex-col gap-12 text-center w-full z-10">
         <div>
-          <p className="text-[10px] text-pink-light uppercase tracking-[0.2em] font-bold mb-3">Designed By</p>
-          <p className="text-2xl font-serif italic text-gray-800">David Adesta</p>
+          <p className="text-[8px] text-pink-primary/40 uppercase tracking-[0.3em] font-black mb-4">Art Direction</p>
+          <p className="text-3xl font-serif italic text-black tracking-tighter">David Adesta</p>
         </div>
-        
-        <div className="flex justify-center">
-          <div className="w-12 h-[1px] bg-gradient-to-r from-transparent via-pink-200 to-transparent" />
-        </div>
-        
+        <div className="w-8 h-[2px] bg-pink-primary/20 mx-auto" />
         <div>
-          <p className="text-[10px] text-pink-light uppercase tracking-[0.2em] font-bold mb-3">Powered By</p>
-          <p className="text-xl font-bold text-gray-800 tracking-tight">Happy Moments</p>
+          <p className="text-[8px] text-pink-primary/40 uppercase tracking-[0.3em] font-black mb-4">Production</p>
+          <p className="text-xl font-black text-black tracking-tighter">Happy Moments Studio</p>
         </div>
       </div>
-
-      <motion.div
-        animate={{ 
-          scale: [1, 1.2, 1],
-          opacity: [0.8, 1, 0.8]
-        }}
-        transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-        className="mt-12"
-      >
-        <Heart className="w-10 h-10 fill-pink-primary text-pink-primary drop-shadow-lg" />
-      </motion.div>
-      
-      <p className="mt-8 text-[10px] font-bold text-pink-light uppercase tracking-widest opacity-40">
-        © 2024 All Rights Reserved
-      </p>
+      <motion.div animate={{ y: [0, -5, 0], scale: [1, 1.1, 1] }} transition={{ repeat: Infinity, duration: 3 }} className="mt-16"><Heart className="w-12 h-12 fill-pink-primary text-pink-primary drop-shadow-xl" /></motion.div>
+      <p className="mt-12 text-[8px] font-black text-pink-primary/20 uppercase tracking-[0.3em]">Built for you with love</p>
     </motion.div>
   );
 }
