@@ -49,10 +49,13 @@ function Landing({ onNext }: { onNext: () => void }) {
       </motion.div>
 
       {/* Envelope Container */}
-      <div 
+      <motion.div 
         className="relative w-80 h-56 cursor-pointer"
-        style={{ perspective: "1000px" }}
+        style={{ perspective: "1500px" }}
         onClick={() => !isOpen && setIsOpen(true)}
+        whileHover={!isOpen ? { scale: 1.05 } : {}}
+        whileTap={!isOpen ? { scale: 0.95 } : {}}
+        transition={{ type: "spring", stiffness: 400, damping: 25 }}
       >
         {/* Envelope Back (Inside) */}
         <div className="absolute inset-0 bg-pink-600 rounded-lg shadow-inner overflow-hidden">
@@ -64,8 +67,9 @@ function Landing({ onNext }: { onNext: () => void }) {
           className="absolute left-4 right-4 bg-[#fdfbf7] rounded-md p-6 flex flex-col items-center justify-center gap-4 shadow-[0_0_15px_rgba(0,0,0,0.1)] border border-gray-100"
           style={{ height: "180px", bottom: "16px", zIndex: 10, backgroundImage: 'linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px)', backgroundSize: '100% 24px' }}
           initial={{ y: 0 }}
-          animate={isOpen ? { y: -120 } : { y: 0 }}
-          transition={{ delay: isOpen ? 0.6 : 0, duration: 0.7, type: "spring", stiffness: 100 }}
+          animate={isOpen ? { y: -130 } : { y: 0 }}
+          transition={{ delay: isOpen ? 0.4 : 0, type: "spring", stiffness: 90, damping: 14 }}
+          whileHover={isOpen ? { y: -140, scale: 1.02 } : {}}
           onClick={(e) => {
             if (isOpen) {
               e.stopPropagation(); // prevent envelope click
@@ -100,10 +104,11 @@ function Landing({ onNext }: { onNext: () => void }) {
         <motion.div 
           className="absolute top-0 left-0 right-0 h-[65%] origin-top pointer-events-none drop-shadow-xl"
           style={{ transformStyle: "preserve-3d" }}
+          initial={{ rotateX: 0, zIndex: 30 }}
           animate={{ rotateX: isOpen ? 180 : 0, zIndex: isOpen ? 0 : 30 }}
           transition={{ 
-            rotateX: { duration: 0.8, ease: "easeInOut" },
-            zIndex: { delay: isOpen ? 0.4 : 0 } 
+            rotateX: { duration: 0.6, ease: [0.4, 0, 0.2, 1] },
+            zIndex: { delay: isOpen ? 0.2 : 0 } 
           }}
         >
           {/* Front of the flap (visible when closed) */}
@@ -124,7 +129,7 @@ function Landing({ onNext }: { onNext: () => void }) {
             <div className="w-full h-full opacity-30 bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:10px_10px]" />
           </div>
         </motion.div>
-      </div>
+      </motion.div>
 
       <p className="text-pink-light font-medium animate-pulse mt-4">
         {isOpen ? "Tap the letter to continue ✨" : "Tap to open"}
@@ -135,60 +140,185 @@ function Landing({ onNext }: { onNext: () => void }) {
 
 function Loading({ onNext }: { onNext: () => void }) {
   useEffect(() => {
-    const timer = setTimeout(onNext, 4500); // Wait 4.5s then go next
+    const timer = setTimeout(onNext, 5500);
     return () => clearTimeout(timer);
   }, [onNext]);
+
+  // Ease: smooth deceleration like a feather landing
+  const dropEase = [0.16, 1, 0.3, 1] as const;
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
-      className="z-10 flex flex-col items-center justify-center p-8 gap-12"
+      transition={{ duration: 0.6 }}
+      className="z-10 flex flex-col items-center justify-center p-8 gap-8 min-h-screen"
     >
-      <h2 className="text-2xl md:text-3xl font-semibold text-pink-light animate-pulse">
-        Preparing your surprise...
-      </h2>
-      <div className="flex gap-8 items-end justify-center h-32">
-        {/* Doll */}
+      <motion.h2
+        initial={{ opacity: 0, y: -16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-primary to-pink-light"
+      >
+        Cooking up something sweet... 🍰
+      </motion.h2>
+
+      {/* Cake Scene */}
+      <div className="relative flex flex-col items-center" style={{ width: 260, height: 280 }}>
+
+        {/* ── CANDLE ── */}
         <motion.div
-          initial={{ y: 50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1, rotate: [-5, 5, -5] }}
-          transition={{ delay: 0.5, duration: 0.5, rotate: { repeat: Infinity, duration: 2 } }}
-          className="text-6xl drop-shadow-xl"
+          initial={{ y: -340, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 3.0, duration: 1.1, ease: dropEase }}
+          className="z-40 relative mb-[-6px] flex flex-col items-center"
         >
-          🧸
+          {/* Glow halo */}
+          <motion.div
+            animate={{ scale: [1, 1.5, 1], opacity: [0.2, 0.5, 0.2] }}
+            transition={{ repeat: Infinity, duration: 1.3, ease: "easeInOut" }}
+            className="absolute -top-4 w-10 h-10 rounded-full pointer-events-none"
+            style={{ background: "radial-gradient(circle, #fbbf24 0%, transparent 70%)", filter: "blur(8px)" }}
+          />
+          {/* Flame */}
+          <motion.div
+            animate={{
+              scaleY: [1, 1.18, 0.92, 1.08, 1],
+              scaleX: [1, 0.85, 1.1, 0.9, 1],
+              rotate: [-4, 5, -3, 4, -4],
+            }}
+            transition={{ repeat: Infinity, duration: 0.75, ease: "easeInOut" }}
+            className="w-4 h-7 rounded-[50%_50%_35%_35%/60%_60%_40%_40%]"
+            style={{
+              background: "linear-gradient(to top, #f97316, #fb923c, #fde68a)",
+              boxShadow: "0 0 14px 4px rgba(251,146,60,0.55)",
+              marginBottom: "-2px",
+            }}
+          />
+          {/* Candle stick */}
+          <div
+            className="w-4 h-12 rounded-t-sm shadow border border-pink-200/40"
+            style={{
+              background: "linear-gradient(160deg, #fff9f9 30%, #fce7f3 100%)",
+            }}
+          >
+            {/* Decorative stripes */}
+            {[0, 1, 2, 3].map(i => (
+              <div key={i} className="mx-0.5 h-0.5 rounded-full bg-pink-200/50" style={{ marginTop: i === 0 ? 8 : 9 }} />
+            ))}
+          </div>
         </motion.div>
 
-        {/* Cake */}
+        {/* ── TOP LAYER (smallest) ── */}
         <motion.div
-          initial={{ y: 50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1, scale: [1, 1.05, 1] }}
-          transition={{ delay: 1.5, duration: 0.5, scale: { repeat: Infinity, duration: 1.5 } }}
-          className="text-7xl z-10 drop-shadow-xl"
+          initial={{ y: -320, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 2.1, duration: 1.0, ease: dropEase }}
+          className="z-30 relative flex flex-col items-center"
+          style={{ width: 100 }}
         >
-          🎂
+          {/* Dripping cream */}
+          <div className="flex w-full justify-around px-1" style={{ marginBottom: -1 }}>
+            {[7, 5, 9, 6, 7].map((h, i) => (
+              <div
+                key={i}
+                className="rounded-b-full shadow-sm"
+                style={{ width: 9, height: h, background: "#fff", border: "1px solid #fef3c7" }}
+              />
+            ))}
+          </div>
+          {/* Cake body */}
+          <div
+            className="w-full shadow-md rounded-b-sm overflow-hidden"
+            style={{ height: 48, background: "linear-gradient(to bottom, #fffbeb, #fef9ec, #fde68a22)" }}
+          >
+            <div className="w-full h-2.5 rounded-sm" style={{ background: "rgba(255,255,255,0.7)" }} />
+            <div className="flex justify-around items-center px-2 mt-2">
+              {["#fca5a5","#fcd34d","#a5f3fc"].map((c, i) => (
+                <div key={i} className="w-2.5 h-2.5 rounded-full shadow-sm" style={{ background: c }} />
+              ))}
+            </div>
+          </div>
         </motion.div>
 
-        {/* Cat */}
+        {/* ── MIDDLE LAYER ── */}
         <motion.div
-          initial={{ y: 50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1, x: [0, 5, -5, 0] }}
-          transition={{ delay: 2.5, duration: 0.5, x: { repeat: Infinity, duration: 0.8 } }}
-          className="text-6xl drop-shadow-xl"
+          initial={{ y: -320, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 1.3, duration: 1.0, ease: dropEase }}
+          className="z-20 relative flex flex-col items-center"
+          style={{ width: 160 }}
         >
-          🐱
+          {/* White cream stripe */}
+          <div className="w-full h-3 rounded-sm" style={{ background: "rgba(255,255,255,0.85)", marginBottom: -1 }} />
+          <div
+            className="w-full shadow-lg rounded-b-sm overflow-hidden"
+            style={{ height: 60, background: "linear-gradient(to bottom, #fef3c7, #fffbeb, #fef9ec)" }}
+          >
+            {/* Filling line */}
+            <div className="w-full h-2 mt-8 opacity-40" style={{ background: "#fde68a" }} />
+          </div>
         </motion.div>
+
+        {/* ── BOTTOM LAYER (largest) ── */}
+        <motion.div
+          initial={{ y: -320, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.4, duration: 1.15, ease: dropEase }}
+          className="z-10 relative flex flex-col items-center"
+          style={{ width: 220 }}
+        >
+          <div className="w-full h-3.5 rounded-sm" style={{ background: "rgba(255,255,255,0.85)", marginBottom: -1 }} />
+          <div
+            className="w-full shadow-xl rounded-b-sm overflow-hidden"
+            style={{ height: 76, background: "linear-gradient(to bottom, #fffbeb, #fef9ec, #fef3c7)" }}
+          >
+            <div className="flex justify-around items-center px-4 mt-5">
+              {["#fca5a5","#fde68a","#86efac","#fca5a5","#a5f3fc","#fde68a"].map((c, i) => (
+                <div key={i} className="w-2.5 h-2.5 rounded-full shadow-sm" style={{ background: c }} />
+              ))}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* ── FROSTING SCALLOP ── */}
+        <motion.div
+          initial={{ scaleX: 0, opacity: 0 }}
+          animate={{ scaleX: 1, opacity: 1 }}
+          transition={{ delay: 0.15, duration: 0.9, ease: "easeOut" }}
+          className="flex justify-around z-10"
+          style={{ width: 236, marginTop: -3, transformOrigin: "50% 50%" }}
+        >
+          {Array.from({ length: 13 }).map((_, i) => (
+            <div key={i} className="rounded-b-full border shadow-sm"
+              style={{ width: 14, height: 12, background: "#fff", borderColor: "#fde68a44" }} />
+          ))}
+        </motion.div>
+
+        {/* ── PLATE ── */}
+        <motion.div
+          initial={{ scaleX: 0, opacity: 0 }}
+          animate={{ scaleX: 1, opacity: 1 }}
+          transition={{ delay: 0.05, duration: 0.7, ease: "easeOut" }}
+          style={{
+            width: 270, height: 12, marginTop: 4,
+            background: "linear-gradient(to right, #e5e7eb, #ffffff, #e5e7eb)",
+            borderRadius: 9999, transformOrigin: "50% 50%",
+            boxShadow: "0 3px 10px rgba(0,0,0,0.08)",
+            border: "1px solid #e5e7eb"
+          }}
+        />
       </div>
 
       {/* Loading bar */}
-      <div className="w-64 h-2 bg-pink-soft rounded-full overflow-hidden mt-8 shadow-inner border border-pink-100 relative">
+      <div className="w-64 h-3 bg-pink-soft rounded-full overflow-hidden mt-6 shadow-inner border border-pink-100 relative">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: "100%" }}
-          transition={{ duration: 4, ease: "easeInOut" }}
-          className="h-full bg-gradient-to-r from-pink-light to-pink-primary absolute left-0 top-0"
+          transition={{ duration: 5, ease: "linear" }}
+          className="h-full absolute left-0 top-0"
+          style={{ background: "linear-gradient(to right, #ff69b4, #ff1493, #ff69b4)" }}
         />
       </div>
     </motion.div>
@@ -199,11 +329,11 @@ function Wishes({ onNext }: { onNext: () => void }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const messages = [
-    { text: "Happy Level Up Day!\nSemoga harimu penuh kebahagiaan dan senyum manis. 🥳", color: "bg-[#bde0fe]", rotation: -2, icon: "🐱" }, // Pastel Blue
-    { text: "Terima kasih sudah menjadi orang yang luar biasa!\nJangan lupa senyum hari ini! ✨", color: "bg-[#ffc8dd]", rotation: 3, icon: "😺" }, // Pastel Pink
-    { text: "Semoga semua memori, harapan, dan mimpimu satu per satu bisa tercapai. 🌟", color: "bg-[#fcf6bd]", rotation: -1, icon: "😸" }, // Pastel Yellow
-    { text: "Tetap jadi dirimu sendiri yang menggemaskan!\nYou are loved by many! 🥰", color: "bg-[#d8f3dc]", rotation: 4, icon: "😻" }, // Pastel Green
-    { text: "Enjoy your special day to the fullest!\nSekali lagi, Happy Birthday! ❤️", color: "bg-[#e8ccbf]", rotation: -3, icon: "😽" }, // Pastel Muted Orange/Brown
+    { text: "Happy Level Up Day!\nSemoga harimu penuh kebahagiaan dan senyum manis. 🥳", from: "Nama Pengirim", color: "bg-[#bde0fe]", rotation: -2, icon: "🐱" }, // Pastel Blue
+    { text: "Terima kasih sudah menjadi orang yang luar biasa!\nJangan lupa senyum hari ini! ✨", from: "Nama Pengirim", color: "bg-[#ffc8dd]", rotation: 3, icon: "😺" }, // Pastel Pink
+    { text: "Semoga semua memori, harapan, dan mimpimu satu per satu bisa tercapai. 🌟", from: "Nama Pengirim", color: "bg-[#fcf6bd]", rotation: -1, icon: "😸" }, // Pastel Yellow
+    { text: "Tetap jadi dirimu sendiri yang menggemaskan!\nYou are loved by many! 🥰", from: "Nama Pengirim", color: "bg-[#d8f3dc]", rotation: 4, icon: "😻" }, // Pastel Green
+    { text: "Enjoy your special day to the fullest!\nSekali lagi, Happy Birthday! ❤️", from: "Nama Pengirim", color: "bg-[#e8ccbf]", rotation: -3, icon: "😽" }, // Pastel Muted Orange/Brown
   ];
 
   const handleNextNote = () => {
@@ -221,7 +351,7 @@ function Wishes({ onNext }: { onNext: () => void }) {
       exit={{ opacity: 0, scale: 0.8 }}
       className="z-10 flex flex-col items-center justify-center p-4 w-full h-full"
     >
-      <div className="relative w-80 h-80">
+      <div className="relative w-80 h-96 sm:w-full sm:max-w-md md:max-w-2xl h-[30rem] md:h-[32rem] flex items-center justify-center">
         <AnimatePresence>
           {messages.map((msg, index) => {
             if (index < currentIndex) return null; // Discarded notes
@@ -230,24 +360,24 @@ function Wishes({ onNext }: { onNext: () => void }) {
             const stackedOffset = index - currentIndex;
 
             return (
-              <motion.div
+               <motion.div
                 key={index}
-                className={`absolute inset-0 rounded-md border-4 border-slate-800 p-6 flex flex-col items-center justify-center text-center cursor-pointer shadow-[8px_8px_0_rgba(0,0,0,0.1)] ${msg.color}`}
+                className={`absolute inset-0 rounded-md border-4 border-slate-800 p-8 md:p-12 flex flex-col items-center text-center cursor-pointer shadow-[12px_12px_0_rgba(0,0,0,0.1)] ${msg.color}`}
                 initial={false}
                 animate={{
-                  top: stackedOffset * 8, // Stack notes downwards
+                  top: stackedOffset * 10,
                   right: -stackedOffset * 6,
                   scale: 1 - stackedOffset * 0.04,
                   rotate: isTop ? msg.rotation : msg.rotation + (stackedOffset * 1.5),
                   zIndex: messages.length - index
                 }}
-                exit={{ x: -300, y: 50, opacity: 0, rotate: -20 }}
-                transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                exit={{ x: -500, y: 100, opacity: 0, rotate: -30 }}
+                transition={{ type: "spring", stiffness: 200, damping: 25 }}
                 onClick={isTop ? handleNextNote : undefined}
-                whileHover={isTop ? { scale: 1.02 } : {}}
+                whileHover={isTop ? { scale: 1.01 } : {}}
               >
                 {/* Paperclip */}
-                <Paperclip className="absolute -top-6 right-6 w-10 h-10 text-slate-800 drop-shadow-sm stroke-[3]" />
+                <Paperclip className="absolute -top-6 right-10 w-12 h-12 text-slate-800 drop-shadow-sm stroke-[3]" />
 
                 {/* Animated Cat Emoji */}
                 {isTop && (
@@ -259,18 +389,67 @@ function Wishes({ onNext }: { onNext: () => void }) {
                       opacity: { delay: 0.2 },
                       rotate: { repeat: Infinity, duration: 2, ease: "easeInOut" }
                     }}
-                    className="absolute -top-10 left-4 text-5xl drop-shadow-md z-40"
+                    className="absolute -top-12 left-6 text-6xl md:text-7xl drop-shadow-md z-40"
                   >
                     {msg.icon}
                   </motion.div>
                 )}
 
-                <p className="font-bold text-slate-800 text-xl leading-relaxed whitespace-pre-wrap mt-2 z-10">
-                  {msg.text}
-                </p>
+                {/* Content */}
+                <div className="flex-1 flex flex-col justify-center w-full mt-4">
+                  <p className="font-bold text-slate-800 text-2xl md:text-3xl lg:text-4xl leading-relaxed whitespace-pre-wrap z-10">
+                    {msg.text}
+                  </p>
+                </div>
+                
+                {/* From / Signature */}
+                <div className="w-full text-right mt-auto pt-6 border-t-2 border-slate-800/20 z-10">
+                  <p className="font-bold text-slate-700 text-xl md:text-2xl italic">
+                    - {msg.from}
+                  </p>
+                </div>
+
+                {/* Cat Paws holding the letter */}
+                {isTop && (
+                  <>
+                    {/* Left Paw */}
+                    <motion.div 
+                      initial={{ y: 40 }}
+                      animate={{ y: 0 }}
+                      className="absolute -bottom-4 left-12 z-50 pointer-events-none"
+                    >
+                      <div className="relative w-16 h-20 bg-white border-4 border-slate-800 rounded-t-full shadow-md">
+                        {/* Toe beans */}
+                        <div className="absolute top-2 left-1/2 -translate-x-1/2 flex gap-1">
+                          <div className="w-3 h-4 bg-pink-200 rounded-full" />
+                          <div className="w-3 h-5 bg-pink-200 rounded-full -translate-y-1" />
+                          <div className="w-3 h-4 bg-pink-200 rounded-full" />
+                        </div>
+                        <div className="absolute top-8 left-1/2 -translate-x-1/2 w-8 h-6 bg-pink-200 rounded-full" />
+                      </div>
+                    </motion.div>
+
+                    {/* Right Paw */}
+                    <motion.div 
+                      initial={{ y: 40 }}
+                      animate={{ y: 0 }}
+                      className="absolute -bottom-4 right-12 z-50 pointer-events-none"
+                    >
+                      <div className="relative w-16 h-20 bg-white border-4 border-slate-800 rounded-t-full shadow-md">
+                        {/* Toe beans */}
+                        <div className="absolute top-2 left-1/2 -translate-x-1/2 flex gap-1">
+                          <div className="w-3 h-4 bg-pink-200 rounded-full" />
+                          <div className="w-3 h-5 bg-pink-200 rounded-full -translate-y-1" />
+                          <div className="w-3 h-4 bg-pink-200 rounded-full" />
+                        </div>
+                        <div className="absolute top-8 left-1/2 -translate-x-1/2 w-8 h-6 bg-pink-200 rounded-full" />
+                      </div>
+                    </motion.div>
+                  </>
+                )}
 
                 {isTop && (
-                  <p className="absolute bottom-4 text-xs font-extrabold text-slate-600 animate-pulse uppercase tracking-widest bg-white/50 px-3 py-1 rounded-full">
+                  <p className="absolute bottom-[-24px] transform translate-y-full text-sm font-extrabold text-slate-800 animate-pulse uppercase tracking-widest bg-white/80 px-4 py-2 rounded-full shadow-md border-2 border-slate-800">
                     {index === messages.length - 1 ? "Finish" : "Tap Here"}
                   </p>
                 )}
