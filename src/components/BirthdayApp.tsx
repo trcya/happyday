@@ -147,25 +147,70 @@ function Loading({ onNext }: { onNext: () => void }) {
   // Ease: smooth deceleration like a feather landing
   const dropEase = [0.16, 1, 0.3, 1] as const;
 
+  // Balloon data
+  const balloons = [
+    { color: "#ffc8dd", size: 40, left: "10%", delay: 0.5, duration: 4.5 },
+    { color: "#bde0fe", size: 50, left: "25%", delay: 1.2, duration: 5.0 },
+    { color: "#fcf6bd", size: 45, left: "45%", delay: 0.2, duration: 4.2 },
+    { color: "#d8f3dc", size: 38, left: "65%", delay: 1.8, duration: 4.8 },
+    { color: "#cdb4db", size: 42, left: "85%", delay: 0.8, duration: 4.0 },
+    { color: "#ffafcc", size: 46, left: "15%", delay: 2.5, duration: 5.2 },
+    { color: "#a2d2ff", size: 35, left: "75%", delay: 3.1, duration: 4.3 },
+  ];
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.6 }}
-      className="z-10 flex flex-col items-center justify-center p-8 gap-8 min-h-screen"
+      className="z-10 flex flex-col items-center justify-center p-8 gap-8 min-h-screen relative overflow-hidden w-full"
     >
+      {/* Background Balloons */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        {balloons.map((b, i) => (
+          <motion.div
+            key={i}
+            initial={{ y: "120vh", opacity: 0.7 }}
+            animate={{ 
+              y: "-20vh",
+              x: [0, 15, -15, 0],
+              rotate: [0, 5, -5, 0]
+            }}
+            transition={{ 
+              y: { delay: b.delay, duration: b.duration, repeat: Infinity, ease: "linear" },
+              x: { delay: b.delay, duration: b.duration / 2, repeat: Infinity, ease: "easeInOut" },
+              rotate: { delay: b.delay, duration: b.duration / 3, repeat: Infinity, ease: "easeInOut" }
+            }}
+            className="absolute rounded-full shadow-inner border border-white/30"
+            style={{ 
+              left: b.left, 
+              width: b.size, 
+              height: b.size * 1.2, 
+              backgroundColor: b.color,
+              boxShadow: `inset -5px -5px 15px rgba(0,0,0,0.1), inset 5px 5px 15px rgba(255,255,255,0.4)`
+            }}
+          >
+            {/* Balloon string */}
+            <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-0.5 h-10 bg-gray-400/30" />
+            
+            {/* Balloon knot */}
+            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-1 bg-inherit border-b border-black/10" />
+          </motion.div>
+        ))}
+      </div>
+
       <motion.h2
         initial={{ opacity: 0, y: -16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-primary to-pink-light"
+        className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-primary to-pink-light z-10"
       >
         Cooking up something sweet... 🍰
       </motion.h2>
 
       {/* Cake Scene */}
-      <div className="relative flex flex-col items-center" style={{ width: 260, height: 280 }}>
+      <div className="relative flex flex-col items-center z-10" style={{ width: 260, height: 280 }}>
 
         {/* ── CANDLE ── */}
         <motion.div
@@ -312,7 +357,7 @@ function Loading({ onNext }: { onNext: () => void }) {
       </div>
 
       {/* Loading bar */}
-      <div className="w-64 h-3 bg-pink-soft rounded-full overflow-hidden mt-6 shadow-inner border border-pink-100 relative">
+      <div className="w-64 h-3 bg-pink-soft rounded-full overflow-hidden mt-6 shadow-inner border border-pink-100 relative z-10">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: "100%" }}
@@ -349,9 +394,9 @@ function Wishes({ onNext }: { onNext: () => void }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, scale: 0.8 }}
-      className="z-10 flex flex-col items-center justify-center p-4 w-full h-full"
+      className="z-10 flex flex-col items-center justify-center p-4 w-full h-full min-h-screen"
     >
-      <div className="relative w-80 h-96 sm:w-full sm:max-w-md md:max-w-2xl h-[30rem] md:h-[32rem] flex items-center justify-center">
+      <div className="relative w-80 h-[32rem] sm:w-full sm:max-w-md md:max-w-2xl h-[34rem] md:h-[36rem] flex items-center justify-center">
         <AnimatePresence>
           {messages.map((msg, index) => {
             if (index < currentIndex) return null; // Discarded notes
@@ -362,7 +407,7 @@ function Wishes({ onNext }: { onNext: () => void }) {
             return (
                <motion.div
                 key={index}
-                className={`absolute inset-0 rounded-md border-4 border-slate-800 p-8 md:p-12 flex flex-col items-center text-center cursor-pointer shadow-[12px_12px_0_rgba(0,0,0,0.1)] ${msg.color}`}
+                className={`absolute inset-0 rounded-md border-4 border-slate-800 p-6 sm:p-8 md:p-12 flex flex-col items-center text-center cursor-pointer shadow-[12px_12px_0_rgba(0,0,0,0.1)] ${msg.color}`}
                 initial={false}
                 animate={{
                   top: stackedOffset * 10,
@@ -397,14 +442,14 @@ function Wishes({ onNext }: { onNext: () => void }) {
 
                 {/* Content */}
                 <div className="flex-1 flex flex-col justify-center w-full mt-4">
-                  <p className="font-bold text-slate-800 text-2xl md:text-3xl lg:text-4xl leading-relaxed whitespace-pre-wrap z-10">
+                  <p className="font-bold text-slate-800 text-xl sm:text-2xl md:text-3xl lg:text-4xl leading-relaxed whitespace-pre-wrap z-10">
                     {msg.text}
                   </p>
                 </div>
                 
                 {/* From / Signature */}
-                <div className="w-full text-right mt-auto pt-6 border-t-2 border-slate-800/20 z-10">
-                  <p className="font-bold text-slate-700 text-xl md:text-2xl italic">
+                <div className="w-full text-right mt-auto pt-4 md:pt-6 border-t-2 border-slate-800/20 z-10 mb-4 md:mb-6">
+                  <p className="font-bold text-slate-700 text-lg md:text-2xl italic">
                     - {msg.from}
                   </p>
                 </div>
@@ -416,7 +461,7 @@ function Wishes({ onNext }: { onNext: () => void }) {
                     <motion.div 
                       initial={{ y: 40 }}
                       animate={{ y: 0 }}
-                      className="absolute -bottom-4 left-12 z-50 pointer-events-none"
+                      className="absolute -bottom-8 left-8 sm:left-12 z-50 pointer-events-none scale-75 md:scale-100 origin-bottom"
                     >
                       <div className="relative w-16 h-20 bg-white border-4 border-slate-800 rounded-t-full shadow-md">
                         {/* Toe beans */}
@@ -433,7 +478,7 @@ function Wishes({ onNext }: { onNext: () => void }) {
                     <motion.div 
                       initial={{ y: 40 }}
                       animate={{ y: 0 }}
-                      className="absolute -bottom-4 right-12 z-50 pointer-events-none"
+                      className="absolute -bottom-8 right-8 sm:right-12 z-50 pointer-events-none scale-75 md:scale-100 origin-bottom"
                     >
                       <div className="relative w-16 h-20 bg-white border-4 border-slate-800 rounded-t-full shadow-md">
                         {/* Toe beans */}
@@ -449,7 +494,7 @@ function Wishes({ onNext }: { onNext: () => void }) {
                 )}
 
                 {isTop && (
-                  <p className="absolute bottom-[-24px] transform translate-y-full text-sm font-extrabold text-slate-800 animate-pulse uppercase tracking-widest bg-white/80 px-4 py-2 rounded-full shadow-md border-2 border-slate-800">
+                  <p className="absolute bottom-[-32px] transform translate-y-full text-xs md:text-sm font-extrabold text-slate-800 animate-pulse uppercase tracking-widest bg-white/80 px-4 py-2 rounded-full shadow-md border-2 border-slate-800">
                     {index === messages.length - 1 ? "Finish" : "Tap Here"}
                   </p>
                 )}
