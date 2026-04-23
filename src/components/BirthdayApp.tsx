@@ -200,21 +200,32 @@ function Greeting({ onNext }: { onNext: () => void }) {
   const [confetti, setConfetti] = useState<{ id: number; x: number; y: number; color: string; scale: number; rotate: number }[]>([]);
 
   const handleOpenGift = () => {
+    // Play whistle/party horn sound
+    const audio = new Audio("https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3");
+    audio.volume = 0.5;
+    audio.play().catch(e => console.log("Audio playback failed:", e));
+
+    // Haptic feedback for Android/Mobile
+    if (typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
+      window.navigator.vibrate(50);
+    }
+
     setIsOpened(true);
+    
     setTimeout(() => {
       setShowCake(true);
-      // Generate Confetti
+      // Generate Confetti - slightly more particles for a "WOW" effect
       const colors = ["#ff69b4", "#ff1493", "#ffb6c1", "#ffc0cb", "#ffffff", "#ffd700"];
-      const particles = [...Array(40)].map((_, i) => ({
+      const particles = [...Array(60)].map((_, i) => ({
         id: i,
-        x: Math.random() * 400 - 200,
-        y: Math.random() * -300 - 100,
+        x: Math.random() * 500 - 250,
+        y: Math.random() * -450 - 100,
         color: colors[Math.floor(Math.random() * colors.length)],
-        scale: Math.random() * 1 + 0.5,
+        scale: Math.random() * 0.8 + 0.4,
         rotate: Math.random() * 360
       }));
       setConfetti(particles);
-    }, 450);
+    }, 400); // Snappier timing for mobile
   };
 
   return (
@@ -259,7 +270,7 @@ function Greeting({ onNext }: { onNext: () => void }) {
               }}
               transition={{ duration: 1.5, ease: "easeOut" }}
               className="absolute left-1/2 top-1/2 w-4 h-4 rounded-sm"
-              style={{ backgroundColor: p.color }}
+              style={{ backgroundColor: p.color, willChange: "transform, opacity" }}
             />
           ))}
         </AnimatePresence>
@@ -323,13 +334,32 @@ function Greeting({ onNext }: { onNext: () => void }) {
             whileTap={{ scale: 0.95 }}
           >
             <div className="absolute -inset-12 bg-pink-primary/20 rounded-full blur-[60px] animate-pulse" />
-            <div className="absolute bottom-0 w-full h-[72%] bg-gradient-to-br from-pink-500 to-pink-600 rounded-2xl shadow-2xl border-2 border-pink-700/50 flex justify-center">
-               <div className="w-10 h-full bg-pink-300/80 border-x-2 border-pink-400 shadow-inner" />
-            </div>
             <motion.div 
-               animate={isOpened ? { y: -450, rotate: 60, x: 150, opacity: 0, scale: 1.5 } : { y: [0, -6, 0] }}
-               transition={{ duration: 1, ease: [0.6, 0.05, -0.01, 0.9] }}
+               animate={isOpened ? { scale: [1, 1.05, 1], y: [0, 5, 0] } : {}}
+               className="absolute bottom-0 w-full h-[72%] bg-gradient-to-br from-pink-500 to-pink-600 rounded-2xl shadow-2xl border-2 border-pink-700/50 flex justify-center"
+               style={{ willChange: "transform" }}
+            >
+               <div className="w-10 h-full bg-pink-300/80 border-x-2 border-pink-400 shadow-inner" />
+            </motion.div>
+            <motion.div 
+               animate={isOpened ? { 
+                 y: -500, 
+                 rotate: 75, 
+                 x: 200, 
+                 opacity: 0, 
+                 scale: 1.2,
+                 filter: "blur(4px)"
+               } : { 
+                 y: [0, -8, 0],
+                 rotate: [0, -1, 1, 0]
+               }}
+               transition={{ 
+                 duration: isOpened ? 0.8 : 3, 
+                 ease: isOpened ? [0.22, 1, 0.36, 1] : "easeInOut",
+                 repeat: isOpened ? 0 : Infinity
+               }}
                className="absolute top-2 w-[112%] left-[-6%] h-[32%] bg-pink-500 rounded-xl shadow-2xl z-20 border-2 border-pink-600 flex justify-center"
+               style={{ transformStyle: "preserve-3d", willChange: "transform, opacity, filter" }}
             >
                <div className="w-10 h-full bg-pink-300 border-x-2 border-pink-400" />
                <div className="absolute -top-12 flex -space-x-4">
