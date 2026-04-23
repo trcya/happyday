@@ -2,12 +2,13 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Stars, ChevronRight, ChevronLeft, Gift, Paperclip } from "lucide-react";
+import { Heart, Stars, ChevronRight, ChevronLeft, Paperclip } from "lucide-react";
 
 // Steps: 0 = Landing, 1 = Greeting, 2 = Gallery, 3 = Wishes, 4 = Credits
 
 // ─── Global Sound Utilities ────────────────────────────────────────────────
 function playSound(url: string, volume = 0.4) {
+  if (typeof window === 'undefined') return;
   try {
     const audio = new Audio(url);
     audio.volume = volume;
@@ -115,7 +116,7 @@ function Landing({ onNext }: { onNext: () => void }) {
               borderRadius: "60% 40% 60% 40%",
             }}
             animate={{
-              y: [0, -(window?.innerHeight ?? 900) - 80],
+              y: [0, "-110vh"],
               x: [0, p.drift],
               rotate: [0, 360],
               opacity: [0, 0.6, 0.4, 0],
@@ -159,14 +160,13 @@ function Landing({ onNext }: { onNext: () => void }) {
           className="text-center mb-3"
         >
           <h1
-            className="font-black tracking-tight leading-none px-4"
+            className="font-black tracking-tight leading-[1.1] px-4 break-words"
             style={{
-              fontSize: "clamp(2.8rem, 10vw, 5.5rem)",
+              fontSize: "clamp(2.4rem, 12vw, 5rem)",
               background: "linear-gradient(135deg, #ff1493 0%, #ff69b4 50%, #e91e8c 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
-              lineHeight: 1.1,
             }}
           >
             {isOpen ? "A Lifetime of\nHappiness..." : "A Special\nSurprise Awaits!"}
@@ -446,7 +446,7 @@ function Greeting({ onNext }: { onNext: () => void }) {
 
       <motion.div animate={showCake ? { y: -20 } : { y: 0 }} className="space-y-3 mb-10 z-10 relative">
         <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.2 }}>
-          <h1 className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-pink-primary to-pink-light tracking-tighter pb-2 drop-shadow-sm">
+          <h1 className="text-5xl sm:text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-pink-primary to-pink-light tracking-tighter pb-2 drop-shadow-sm leading-[0.9]">
             HAPPY<br/>BIRTHDAY!
           </h1>
         </motion.div>
@@ -536,7 +536,7 @@ function Greeting({ onNext }: { onNext: () => void }) {
                </div>
             </motion.div>
             
-            <motion.div animate={{ opacity: [0.5, 1, 0.5] }} transition={{ repeat: Infinity, duration: 1.5 }} className="absolute -bottom-16 left-1/2 -translate-x-1/2 text-pink-primary font-black uppercase text-[10px] tracking-widest bg-white px-6 py-2 rounded-full border-2 border-pink-primary shadow-xl">
+            <motion.div animate={{ opacity: [0.5, 1, 0.5] }} transition={{ repeat: Infinity, duration: 1.5 }} className="absolute -bottom-12 left-1/2 -translate-x-1/2 text-pink-primary font-black uppercase text-[10px] tracking-widest bg-white/90 backdrop-blur-sm px-6 py-2.5 rounded-full border-2 border-pink-primary shadow-xl z-30 whitespace-nowrap">
                🎁 Tap to Reveal
             </motion.div>
           </motion.div>
@@ -634,12 +634,12 @@ function Gallery({ onNext }: { onNext: () => void }) {
         </AnimatePresence>
         
         {/* Playful Caption */}
-        <div className="absolute bottom-6 left-0 right-0 px-4 flex flex-col items-center">
+        <div className="absolute bottom-4 left-0 right-0 px-4 flex flex-col items-center">
           <motion.p 
             key={`caption-${index}`}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="font-serif italic font-bold text-pink-500 text-xl md:text-2xl text-center leading-tight drop-shadow-sm"
+            className="font-serif italic font-bold text-pink-500 text-lg md:text-2xl text-center leading-tight drop-shadow-sm break-words max-w-[90%]"
           >
             {images[index].caption}
           </motion.p>
@@ -782,7 +782,7 @@ function Wishes({ onNext }: { onNext: () => void }) {
                 
                 <div className="flex-1 flex flex-col justify-center w-full mt-12 relative z-10 overflow-y-auto custom-scrollbar">
                   <p className="font-serif italic text-pink-primary/30 text-[10px] tracking-[0.4em] uppercase mb-10">Secret Wish</p>
-                  <p className="font-black text-gray-800 text-xl sm:text-2xl md:text-3xl leading-[1.4] tracking-tight mb-8 whitespace-pre-wrap">
+                  <p className="font-black text-gray-800 text-xl sm:text-2xl md:text-3xl leading-[1.4] tracking-tight mb-8 whitespace-pre-wrap break-words px-2">
                     {msg.text}
                   </p>
                 </div>

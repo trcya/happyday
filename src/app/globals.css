@@ -1,18 +1,15 @@
 @import "tailwindcss";
 
-@theme {
-  --color-pink-primary: #ff1493;
-  --color-pink-light: #ff69b4;
-  --color-pink-soft: #fff0f5;
-  --font-sans: 'Inter', sans-serif;
-}
-
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --color-pink-primary: #ff1493;
+  --color-pink-light: #ff69b4;
+  --color-pink-soft: #fff0f5;
   --pink-primary: #ff1493;
   --pink-light: #ff69b4;
   --pink-soft: #fff0f5;
+  --font-sans: 'Inter', sans-serif;
 }
 
 /* ─── Android / Mobile Smoothness ───────────────────────── */
@@ -52,6 +49,7 @@ body {
 .text-gradient {
   background: linear-gradient(to right, var(--pink-primary), var(--pink-light));
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
