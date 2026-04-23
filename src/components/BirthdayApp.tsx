@@ -67,7 +67,7 @@ function Landing({ onNext }: { onNext: () => void }) {
   const [petals, setPetals] = useState<{ x: number; size: number; duration: number; delay: number; drift: number }[]>([]);
 
   useEffect(() => {
-    setPetals([...Array(18)].map(() => ({
+    setPetals([...Array(12)].map(() => ({
       x: Math.random() * 100,
       size: Math.random() * 16 + 8,
       duration: Math.random() * 6 + 8,
@@ -114,6 +114,7 @@ function Landing({ onNext }: { onNext: () => void }) {
               background: `radial-gradient(ellipse at 40% 40%, #ffb6c1, #ff69b4)`,
               opacity: 0.55,
               borderRadius: "60% 40% 60% 40%",
+              willChange: "transform"
             }}
             animate={{
               y: [0, "-110vh"],
@@ -415,7 +416,7 @@ function Greeting({ onNext }: { onNext: () => void }) {
             }}
             transition={{ duration: 5 + i, repeat: Infinity, delay: i * 0.5 }}
             className="absolute text-pink-100"
-            style={{ left: `${8 + i * 10}%`, top: '80%' }}
+            style={{ left: `${8 + i * 10}%`, top: '80%', transform: 'translateZ(0)', willChange: 'transform' }}
           >
             <Stars size={12 + i * 4} />
           </motion.div>
@@ -736,17 +737,18 @@ function Wishes({ onNext }: { onNext: () => void }) {
       <div className="relative w-full max-w-sm sm:max-w-md h-[34rem] flex items-center justify-center pt-10">
         <AnimatePresence>
           {messages.map((msg, index) => {
-            if (index < currentIndex) return null;
+            if (index < currentIndex || index > currentIndex + 2) return null;
             const isTop = index === currentIndex;
             const stackedOffset = index - currentIndex;
             
             return (
                <motion.div
                 key={index}
-                className={`absolute inset-0 rounded-[2rem] border border-pink-100 p-8 sm:p-12 flex flex-col items-center text-center cursor-pointer shadow-[0_20px_50px_-10px_rgba(0,0,0,0.1)] ${msg.color} backdrop-blur-md`}
+                className={`absolute inset-0 rounded-[2rem] border border-pink-100 p-8 sm:p-12 flex flex-col items-center text-center cursor-pointer shadow-[0_15px_35px_-5px_rgba(0,0,0,0.1)] ${msg.color}`}
                 style={{ 
                   transformOrigin: "center bottom",
-                  backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.4) 0%, transparent 100%)'
+                  backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.4) 0%, transparent 100%)',
+                  willChange: "transform, opacity"
                 }}
                 animate={{ 
                   y: stackedOffset * 12, 
@@ -756,8 +758,8 @@ function Wishes({ onNext }: { onNext: () => void }) {
                   zIndex: messages.length - index,
                   opacity: 1 - (stackedOffset * 0.15)
                 }}
-                exit={{ x: -1200, y: 150, rotate: -60, opacity: 0, transition: { duration: 0.7, ease: "easeInOut" } }}
-                transition={{ type: "spring", stiffness: 85, damping: 22 }}
+                exit={{ x: -600, y: 100, rotate: -45, opacity: 0 }}
+                transition={{ type: "spring", stiffness: 100, damping: 20 }}
                 onClick={isTop ? handleNextNote : undefined}
               >
                 {/* Paper Texture Overlay */}
@@ -775,6 +777,7 @@ function Wishes({ onNext }: { onNext: () => void }) {
                       rotate: { repeat: Infinity, duration: 3, ease: "easeInOut" }
                     }}
                     className="absolute -top-16 left-6 text-7xl md:text-9xl drop-shadow-2xl z-50 select-none"
+                    style={{ willChange: "transform" }}
                   >
                     {msg.icon}
                   </motion.div>
