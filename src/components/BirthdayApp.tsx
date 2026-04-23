@@ -358,7 +358,6 @@ function Landing({ onNext }: { onNext: () => void }) {
             ))}
           </div>
         </motion.div>
-
       </div>
     </motion.div>
   );
@@ -367,7 +366,9 @@ function Landing({ onNext }: { onNext: () => void }) {
 function Greeting({ onNext }: { onNext: () => void }) {
   const [isOpened, setIsOpened] = useState(false);
   const [showCake, setShowCake] = useState(false);
+  const [isCandleOut, setIsCandleOut] = useState(false);
   const [confetti, setConfetti] = useState<{ id: number; x: number; y: number; color: string; scale: number; rotate: number }[]>([]);
+  const [balloons, setBalloons] = useState<{ id: number; x: number; color: string; delay: number; size: number }[]>([]);
 
   const handleOpenGift = () => {
     // Play whistle/party horn sound
@@ -384,6 +385,17 @@ function Greeting({ onNext }: { onNext: () => void }) {
     
     setTimeout(() => {
       setShowCake(true);
+      
+      // Generate Balloons
+      const balloonColors = ["#f06292", "#f48fb1", "#ba68c8", "#4fc3f7", "#ffd54f", "#ff8a65"];
+      setBalloons([...Array(15)].map((_, i) => ({
+        id: i,
+        x: Math.random() * 100,
+        color: balloonColors[Math.floor(Math.random() * balloonColors.length)],
+        delay: Math.random() * 2,
+        size: Math.random() * 20 + 30
+      })));
+
       // 35 particles — enough wow, gentle on Android GPU
       const colors = ["#f48fb1", "#f06292", "#fce4ec", "#ffb6c1", "#ffffff", "#f8bbd9"];
       const particles = [...Array(35)].map((_, i) => ({
@@ -398,6 +410,15 @@ function Greeting({ onNext }: { onNext: () => void }) {
     }, 350);
   };
 
+  const handleBlowCandle = () => {
+    if (isCandleOut) return;
+    setIsCandleOut(true);
+    playSound("https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3", 0.3);
+    if (typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
+      window.navigator.vibrate(30);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -405,6 +426,26 @@ function Greeting({ onNext }: { onNext: () => void }) {
       exit={{ opacity: 0, scale: 1.1, filter: "blur(10px)" }}
       className="z-10 flex flex-col items-center text-center px-6 max-w-lg w-full min-h-screen justify-center py-12 relative overflow-hidden"
     >
+      {/* Floating Balloons */}
+      <div className="absolute inset-0 pointer-events-none z-30">
+        {balloons.map((b) => (
+          <motion.div
+            key={b.id}
+            initial={{ y: "120vh", x: `${b.x}vw`, opacity: 0.8 }}
+            animate={{ y: "-20vh", x: `${b.x + (Math.random() * 10 - 5)}vw` }}
+            transition={{ duration: 6 + Math.random() * 4, delay: b.delay, ease: "easeOut" }}
+            className="absolute flex flex-col items-center"
+          >
+            <div 
+              className="rounded-full shadow-lg border-2 border-white/20 relative"
+              style={{ width: b.size, height: b.size * 1.2, background: b.color }}
+            >
+              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full w-0.5 h-12 bg-white/40" />
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
       {/* Background Particles Layer — reduced for Android */}
       <div className="absolute inset-0 pointer-events-none z-0">
         {[...Array(7)].map((_, i) => (
@@ -452,7 +493,7 @@ function Greeting({ onNext }: { onNext: () => void }) {
           </h1>
         </motion.div>
         <p className="text-xl md:text-2xl text-gray-700 font-bold bg-white/40 backdrop-blur-sm px-6 py-2 rounded-full border border-white/50 shadow-sm mx-auto w-fit">
-           {showCake ? "Surprise! Best Day Ever! 🥳" : "Something magical is waiting... ✨"}
+           {showCake ? (isCandleOut ? "Make a wish! 💖✨" : "Tap the candle to blow it! 🎂") : "Something magical is waiting... ✨"}
         </p>
       </motion.div>
 
@@ -468,13 +509,29 @@ function Greeting({ onNext }: { onNext: () => void }) {
             >
               <div className="relative flex flex-col items-center" style={{ width: 230, height: 280 }}>
                 {/* Candle */}
-                <div className="z-40 flex flex-col items-center mb-[-2px]">
-                  <motion.div
-                    animate={{ scale: [1, 1.25, 1], opacity: [0.85, 1, 0.85] }}
-                    transition={{ repeat: Infinity, duration: 0.75 }}
-                    className="w-4 h-7 rounded-full"
-                    style={{ background: "linear-gradient(to top, #f97316, #facc15, #fff)" }}
-                  />
+                <div 
+                  className="z-40 flex flex-col items-center mb-[-2px] cursor-pointer"
+                  onClick={handleBlowCandle}
+                >
+                  <AnimatePresence>
+                    {!isCandleOut && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0 }}
+                        animate={{ scale: [1, 1.25, 1], opacity: [0.85, 1, 0.85] }}
+                        exit={{ opacity: 0, scale: 0, y: -10 }}
+                        transition={{ repeat: Infinity, duration: 0.75 }}
+                        className="w-4 h-7 rounded-full"
+                        style={{ background: "linear-gradient(to top, #f97316, #facc15, #fff)" }}
+                      />
+                    )}
+                  </AnimatePresence>
+                  {isCandleOut && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 0 }}
+                      animate={{ opacity: [0, 0.5, 0], y: -20 }}
+                      className="w-3 h-5 bg-gray-400 rounded-full blur-sm"
+                    />
+                  )}
                   <div className="w-3 h-10" style={{ background: "linear-gradient(to bottom, #f9a8d4, #f472b6)", borderRadius: "3px 3px 0 0" }} />
                 </div>
 
@@ -555,11 +612,11 @@ function Greeting({ onNext }: { onNext: () => void }) {
       </div>
 
       <AnimatePresence>
-        {showCake && (
+        {showCake && isCandleOut && (
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.2 }}
+            transition={{ delay: 0.5 }}
             className="z-50"
           >
             <motion.button
