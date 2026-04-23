@@ -44,12 +44,12 @@ export default function BirthdayApp() {
 
   return (
     <div
-      className="relative min-h-screen w-full bg-white text-pink-primary overflow-hidden flex flex-col items-center justify-center font-sans selection:bg-pink-light selection:text-white"
+      className="relative min-h-screen w-full overflow-hidden flex flex-col items-center justify-center selection:bg-pink-200 selection:text-pink-700"
       onClick={startMusic}
-      style={{ touchAction: "manipulation" }}
+      style={{ touchAction: "manipulation", background: "linear-gradient(160deg, #fff0f8 0%, #ffffff 50%, #fce4ec 100%)", fontFamily: "var(--font-nunito, 'Nunito', sans-serif)" }}
     >
       {/* Background decoration */}
-      <div className="absolute inset-0 z-0 pointer-events-none opacity-20 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-pink-soft via-white to-white" />
+      <div className="absolute inset-0 z-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at center, #fce4ec 0%, #ffffff 60%, #fff0f8 100%)", opacity: 0.35 }} />
 
       <AnimatePresence mode="wait">
         {step === 0 && <Landing key="landing" onNext={nextStep} />}
@@ -67,12 +67,12 @@ function Landing({ onNext }: { onNext: () => void }) {
   const [petals, setPetals] = useState<{ x: number; size: number; duration: number; delay: number; drift: number }[]>([]);
 
   useEffect(() => {
-    setPetals([...Array(12)].map(() => ({
+    setPetals([...Array(8)].map(() => ({
       x: Math.random() * 100,
-      size: Math.random() * 16 + 8,
-      duration: Math.random() * 6 + 8,
-      delay: Math.random() * 10,
-      drift: (Math.random() - 0.5) * 120,
+      size: Math.random() * 14 + 8,
+      duration: Math.random() * 5 + 9,
+      delay: Math.random() * 8,
+      drift: (Math.random() - 0.5) * 80,
     })));
   }, []);
 
@@ -84,7 +84,7 @@ function Landing({ onNext }: { onNext: () => void }) {
       transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
       className="z-10 relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden"
       style={{
-        background: "linear-gradient(160deg, #fff0f8 0%, #ffffff 45%, #fce7f3 100%)",
+        background: "linear-gradient(160deg, #fff5fb 0%, #ffffff 45%, #fce4ec 100%)",
       }}
     >
       {/* === LAYERED BACKGROUND === */}
@@ -111,10 +111,11 @@ function Landing({ onNext }: { onNext: () => void }) {
               left: `${p.x}%`,
               width: p.size,
               height: p.size * 1.4,
-              background: `radial-gradient(ellipse at 40% 40%, #ffb6c1, #ff69b4)`,
-              opacity: 0.55,
+              background: `radial-gradient(ellipse at 40% 40%, #ffc1d4, #f48fb1)`,
+              opacity: 0.5,
               borderRadius: "60% 40% 60% 40%",
-              willChange: "transform"
+              willChange: "transform",
+              transform: "translateZ(0)"
             }}
             animate={{
               y: [0, "-110vh"],
@@ -163,8 +164,8 @@ function Landing({ onNext }: { onNext: () => void }) {
           <h1
             className="font-black tracking-tight leading-[1.1] px-4 break-words"
             style={{
-              fontSize: "clamp(2.4rem, 12vw, 5rem)",
-              background: "linear-gradient(135deg, #ff1493 0%, #ff69b4 50%, #e91e8c 100%)",
+              fontSize: "clamp(2.2rem, 11vw, 4.5rem)",
+              background: "linear-gradient(135deg, #e91e8c 0%, #f06292 50%, #f48fb1 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
@@ -232,11 +233,11 @@ function Landing({ onNext }: { onNext: () => void }) {
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
           >
             {/* ENVELOPE BACK WALL */}
-            <div className="absolute inset-0 rounded-2xl shadow-[0_20px_60px_-10px_rgba(255,20,147,0.35)] overflow-hidden border border-pink-300/30"
-              style={{ background: "linear-gradient(135deg, #f472b6, #ec4899, #db2777)" }}
+            <div className="absolute inset-0 rounded-2xl shadow-[0_16px_40px_-8px_rgba(240,98,146,0.4)] overflow-hidden border border-pink-200/50"
+              style={{ background: "linear-gradient(135deg, #f8bbd9, #f06292, #e91e8c)" }}
             >
-              <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_20%_20%,_#fff_1px,_transparent_1px)] bg-[length:14px_14px]" />
-              <div className="absolute inset-0 bg-gradient-to-tr from-pink-900/10 to-white/10" />
+              <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_20%_20%,_#fff_1px,_transparent_1px)] bg-[length:16px_16px]" />
+              <div className="absolute inset-0 bg-gradient-to-tr from-pink-800/10 to-white/20" />
             </div>
 
             {/* THE LETTER */}
@@ -276,8 +277,8 @@ function Landing({ onNext }: { onNext: () => void }) {
               className="absolute inset-0 rounded-2xl z-[5] pointer-events-none"
               style={{
                 clipPath: "polygon(0 0, 50% 55%, 100% 0, 100% 100%, 0 100%)",
-                background: "linear-gradient(160deg, #f472b6, #ec4899)",
-                boxShadow: "inset 0 0 40px rgba(0,0,0,0.06)",
+                background: "linear-gradient(160deg, #f8bbd9, #f06292)",
+                boxShadow: "inset 0 0 30px rgba(0,0,0,0.04)",
               }}
             />
 
@@ -295,8 +296,8 @@ function Landing({ onNext }: { onNext: () => void }) {
                 style={{
                   clipPath: "polygon(0 0, 100% 0, 50% 100%)",
                   backfaceVisibility: "hidden",
-                  background: "linear-gradient(160deg, #fb7bc9, #e879a8)",
-                  boxShadow: "0 8px 30px rgba(219,39,119,0.3)",
+                  background: "linear-gradient(160deg, #fbbdd9, #f06292)",
+                  boxShadow: "0 6px 20px rgba(240,98,146,0.3)",
                 }}
               >
                 {/* Seal */}
@@ -305,7 +306,7 @@ function Landing({ onNext }: { onNext: () => void }) {
                   whileTap={{ scale: 0.88 }}
                   className="relative z-50 transform translate-y-8 flex flex-col items-center"
                 >
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-red-500 to-rose-700 flex items-center justify-center shadow-[0_8px_24px_rgba(220,38,38,0.5)] border-4 border-rose-800/40 cursor-pointer">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center shadow-[0_8px_24px_rgba(240,98,146,0.55)] border-4 border-pink-700/30 cursor-pointer">
                     <Heart size={26} className="text-white fill-white" />
                   </div>
                   {!isOpen && (
@@ -383,18 +384,18 @@ function Greeting({ onNext }: { onNext: () => void }) {
     
     setTimeout(() => {
       setShowCake(true);
-      // Generate Confetti - slightly more particles for a "WOW" effect
-      const colors = ["#ff69b4", "#ff1493", "#ffb6c1", "#ffc0cb", "#ffffff", "#ffd700"];
-      const particles = [...Array(60)].map((_, i) => ({
+      // 35 particles — enough wow, gentle on Android GPU
+      const colors = ["#f48fb1", "#f06292", "#fce4ec", "#ffb6c1", "#ffffff", "#f8bbd9"];
+      const particles = [...Array(35)].map((_, i) => ({
         id: i,
-        x: Math.random() * 500 - 250,
-        y: Math.random() * -450 - 100,
+        x: Math.random() * 400 - 200,
+        y: Math.random() * -380 - 80,
         color: colors[Math.floor(Math.random() * colors.length)],
-        scale: Math.random() * 0.8 + 0.4,
+        scale: Math.random() * 0.7 + 0.3,
         rotate: Math.random() * 360
       }));
       setConfetti(particles);
-    }, 400); // Snappier timing for mobile
+    }, 350);
   };
 
   return (
@@ -404,21 +405,20 @@ function Greeting({ onNext }: { onNext: () => void }) {
       exit={{ opacity: 0, scale: 1.1, filter: "blur(10px)" }}
       className="z-10 flex flex-col items-center text-center px-6 max-w-lg w-full min-h-screen justify-center py-12 relative overflow-hidden"
     >
-      {/* Background Particles Layer */}
+      {/* Background Particles Layer — reduced for Android */}
       <div className="absolute inset-0 pointer-events-none z-0">
-        {[...Array(12)].map((_, i) => (
+        {[...Array(7)].map((_, i) => (
           <motion.div
             key={i}
             animate={{ 
-              opacity: [0, 0.3, 0],
-              y: [0, -200],
-              x: Math.sin(i) * 100,
+              opacity: [0, 0.25, 0],
+              y: [0, -160],
             }}
-            transition={{ duration: 5 + i, repeat: Infinity, delay: i * 0.5 }}
-            className="absolute text-pink-100"
-            style={{ left: `${8 + i * 10}%`, top: '80%', transform: 'translateZ(0)', willChange: 'transform' }}
+            transition={{ duration: 6 + i, repeat: Infinity, delay: i * 0.7 }}
+            className="absolute text-pink-200"
+            style={{ left: `${10 + i * 13}%`, top: '78%', transform: 'translateZ(0)', willChange: 'transform' }}
           >
-            <Stars size={12 + i * 4} />
+            <Stars size={10 + i * 3} />
           </motion.div>
         ))}
       </div>
@@ -437,9 +437,9 @@ function Greeting({ onNext }: { onNext: () => void }) {
                 scale: p.scale,
                 rotate: p.rotate 
               }}
-              transition={{ duration: 1.5, ease: "easeOut" }}
-              className="absolute left-1/2 top-1/2 w-4 h-4 rounded-sm"
-              style={{ backgroundColor: p.color, willChange: "transform, opacity" }}
+              transition={{ duration: 1.3, ease: "easeOut" }}
+              className="absolute left-1/2 top-1/2 w-3.5 h-3.5 rounded-full"
+              style={{ backgroundColor: p.color, willChange: "transform, opacity", transform: "translateZ(0)" }}
             />
           ))}
         </AnimatePresence>
@@ -447,7 +447,7 @@ function Greeting({ onNext }: { onNext: () => void }) {
 
       <motion.div animate={showCake ? { y: -20 } : { y: 0 }} className="space-y-3 mb-10 z-10 relative">
         <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.2 }}>
-          <h1 className="text-5xl sm:text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-pink-primary to-pink-light tracking-tighter pb-2 drop-shadow-sm leading-[0.9]">
+          <h1 className="text-5xl sm:text-6xl md:text-8xl font-black text-transparent bg-clip-text tracking-tighter pb-2 drop-shadow-sm leading-[0.9]" style={{ backgroundImage: "linear-gradient(160deg, #e91e8c, #f06292, #f48fb1)" }}>
             HAPPY<br/>BIRTHDAY!
           </h1>
         </motion.div>
@@ -466,31 +466,41 @@ function Greeting({ onNext }: { onNext: () => void }) {
               transition={{ type: "spring", stiffness: 120, damping: 12 }}
               className="absolute inset-0 flex flex-col items-center justify-center z-10"
             >
-              <div className="relative flex flex-col items-center" style={{ width: 230, height: 270 }}>
-                {/* Cake Detail Upgrades */}
-                <div className="w-7 h-7 bg-red-600 rounded-full shadow-[0_4px_10px_rgba(220,38,38,0.5)] relative z-50 mb-[-4px] border-b-2 border-red-800" />
-                <div className="z-40 flex flex-col items-center mb-[-4px]">
-                  <motion.div 
-                    animate={{ 
-                      scale: [1, 1.3, 1], 
-                      opacity: [0.8, 1, 0.8],
-                      boxShadow: ["0 0 10px #fbbf24", "0 0 25px #fbbf24", "0 0 10px #fbbf24"] 
-                    }} 
-                    transition={{ repeat: Infinity, duration: 0.8 }} 
-                    className="w-5 h-8 rounded-full bg-gradient-to-t from-orange-500 via-yellow-400 to-white" 
+              <div className="relative flex flex-col items-center" style={{ width: 230, height: 280 }}>
+                {/* Candle */}
+                <div className="z-40 flex flex-col items-center mb-[-2px]">
+                  <motion.div
+                    animate={{ scale: [1, 1.25, 1], opacity: [0.85, 1, 0.85] }}
+                    transition={{ repeat: Infinity, duration: 0.75 }}
+                    className="w-4 h-7 rounded-full"
+                    style={{ background: "linear-gradient(to top, #f97316, #facc15, #fff)" }}
                   />
-                  <div className="w-3.5 h-12 bg-gradient-to-r from-pink-200 to-pink-300 rounded-t-sm shadow-inner" />
+                  <div className="w-3 h-10" style={{ background: "linear-gradient(to bottom, #f9a8d4, #f472b6)", borderRadius: "3px 3px 0 0" }} />
                 </div>
-                <div className="w-36 h-12 bg-white rounded-t-xl shadow-md border border-pink-50 relative z-30" />
-                <div className="w-48 h-16 bg-pink-primary/10 rounded-xl shadow-lg border border-pink-100 relative z-20 mt-[-4px]" />
-                <div className="w-60 h-20 bg-white rounded-xl shadow-2xl border border-pink-50 relative z-10 mt-[-4px] flex items-center justify-center overflow-hidden">
-                   <div className="absolute inset-0 bg-gradient-to-b from-white via-transparent to-pink-50/20" />
-                   <p className="text-xs font-black text-pink-primary/20 tracking-[0.5em] uppercase">Celebration</p>
+
+                {/* Top tier */}
+                <div className="w-32 h-11 relative z-30 flex items-center justify-center rounded-t-2xl overflow-hidden" style={{ background: "#fff0f8", border: "2px solid #f9a8d4" }}>
+                  <div className="absolute inset-x-0 top-0 h-3" style={{ background: "linear-gradient(90deg, #f9a8d4, #f472b6, #f9a8d4)", borderRadius: "0.75rem 0.75rem 50% 50% / 0 0 100% 100%" }} />
+                  <p className="text-[11px] font-black tracking-widest" style={{ color: "#e91e8c", marginTop: 10 }}>🎂 YAY!</p>
                 </div>
-                <div className="w-72 h-5 bg-gray-200 rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.1)] mt-3 border border-white" />
+
+                {/* Middle tier */}
+                <div className="w-44 h-14 relative z-20 mt-[-2px] flex items-center justify-center overflow-hidden" style={{ background: "#fce4ec", border: "2px solid #f9a8d4" }}>
+                  <div className="absolute inset-x-0 top-0 h-3" style={{ background: "linear-gradient(90deg, #f48fb1, #f06292, #f48fb1)", borderRadius: "0 0 50% 50% / 0 0 60% 60%" }} />
+                  <p className="text-sm font-black tracking-wide" style={{ color: "#c2185b", marginTop: 6 }}>Happy Birthday!</p>
+                </div>
+
+                {/* Bottom tier */}
+                <div className="w-56 h-16 relative z-10 mt-[-2px] flex items-center justify-center overflow-hidden rounded-b-2xl" style={{ background: "#fff5fb", border: "2px solid #f9a8d4" }}>
+                  <div className="absolute inset-x-0 top-0 h-3" style={{ background: "linear-gradient(90deg, #f06292, #e91e8c, #f06292)" }} />
+                  <p className="text-base font-black" style={{ color: "#e91e8c", letterSpacing: "0.15em", marginTop: 8 }}>🌸 Celebration 🌸</p>
+                </div>
+
+                {/* Plate */}
+                <div className="w-64 h-4 mt-1 rounded-full" style={{ background: "linear-gradient(to bottom, #fce4ec, #f9a8d4)", boxShadow: "0 6px 20px rgba(240,98,146,0.2)" }} />
               </div>
               {/* Ground Glow */}
-              <div className="absolute -bottom-10 w-64 h-12 bg-pink-primary/10 blur-3xl rounded-full -z-10" />
+              <div className="absolute -bottom-8 w-56 h-10 rounded-full -z-10" style={{ background: "rgba(240,98,146,0.12)", filter: "blur(20px)" }} />
             </motion.div>
           )}
         </AnimatePresence>
@@ -537,7 +547,7 @@ function Greeting({ onNext }: { onNext: () => void }) {
                </div>
             </motion.div>
             
-            <motion.div animate={{ opacity: [0.5, 1, 0.5] }} transition={{ repeat: Infinity, duration: 1.5 }} className="absolute -bottom-12 left-1/2 -translate-x-1/2 text-pink-primary font-black uppercase text-[10px] tracking-widest bg-white/90 backdrop-blur-sm px-6 py-2.5 rounded-full border-2 border-pink-primary shadow-xl z-30 whitespace-nowrap">
+            <motion.div animate={{ opacity: [0.5, 1, 0.5] }} transition={{ repeat: Infinity, duration: 1.5 }} className="absolute -bottom-12 left-1/2 -translate-x-1/2 font-black uppercase text-[10px] tracking-widest px-6 py-2.5 rounded-full shadow-xl z-30 whitespace-nowrap border-2" style={{ color: "#e91e8c", background: "rgba(255,255,255,0.95)", borderColor: "#f9a8d4" }}>
                🎁 Tap to Reveal
             </motion.div>
           </motion.div>
@@ -553,15 +563,19 @@ function Greeting({ onNext }: { onNext: () => void }) {
             className="z-50"
           >
             <motion.button
-              whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(219,39,119,0.3)" }}
+              whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={onNext}
-              className="px-14 py-5 bg-gradient-to-r from-pink-primary to-pink-light text-white rounded-full font-black shadow-[0_15px_30px_rgba(219,39,119,0.4)] hover:brightness-110 transition-all cursor-pointer uppercase tracking-[0.2em] text-sm relative overflow-hidden group"
+              className="px-14 py-5 rounded-full font-black cursor-pointer uppercase tracking-[0.2em] text-sm relative overflow-hidden"
+              style={{
+                background: "linear-gradient(135deg, #e91e8c, #f06292)",
+                color: "#ffffff",
+                boxShadow: "0 15px 30px rgba(233,30,140,0.35)"
+              }}
             >
               <span className="relative z-10 flex items-center gap-3">
-                See My Memories <ChevronRight className="group-hover:translate-x-1 transition-transform" />
+                See My Memories <ChevronRight />
               </span>
-              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
             </motion.button>
           </motion.div>
         )}
@@ -671,14 +685,19 @@ function Gallery({ onNext }: { onNext: () => void }) {
         <div className="absolute top-4 left-4 opacity-40 text-lg drop-shadow-sm">✨</div>
       </div>
 
-      <motion.button 
-        whileHover={{ scale: 1.05, y: -3, boxShadow: "0 15px 25px rgba(255,105,180,0.4)" }} 
-        whileTap={{ scale: 0.95 }} 
-        onClick={onNext} 
-        className="relative z-20 px-10 py-4 bg-gradient-to-r from-pink-400 to-pink-500 text-white rounded-full font-black shadow-[0_10px_20px_rgba(255,105,180,0.3)] cursor-pointer uppercase tracking-[0.2em] text-[12px] w-full border-2 border-white flex items-center justify-center gap-2 overflow-hidden group"
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={onNext}
+        className="relative z-20 px-10 py-4 rounded-full font-black cursor-pointer uppercase tracking-[0.2em] text-[12px] w-full flex items-center justify-center gap-2"
+        style={{
+          background: "linear-gradient(135deg, #f06292, #e91e8c)",
+          color: "#ffffff",
+          boxShadow: "0 10px 24px rgba(233,30,140,0.3)",
+          border: "2px solid rgba(255,255,255,0.4)"
+        }}
       >
-        <span className="relative z-10 flex items-center gap-2">Next Surprise <Heart className="w-4 h-4 fill-white animate-pulse" /></span>
-        <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+        <span className="flex items-center gap-2">Next Surprise <Heart className="w-4 h-4" style={{ fill: "white" }} /></span>
       </motion.button>
     </motion.div>
   );
@@ -690,21 +709,21 @@ function Wishes({ onNext }: { onNext: () => void }) {
     { 
       text: "Happy Birthday to an incredible soul! ✨\n\nMay this year bring you as much joy as you give to everyone around you. You deserve every bit of happiness and more. Keep shining!", 
       from: "David Adesta", 
-      color: "bg-[#fffef0]", 
+      color: "bg-[#fff0f8]", 
       rotation: -2, 
       icon: "🐱" 
     },
     { 
-      text: "To the person who lights up every room! 🌟\n\nWatching you grow and achieve your dreams is an absolute privilege. Never stop being your authentic, wonderful self. You inspire me every single day!", 
+      text: "To the person who lights up every room! 🌸\n\nWatching you grow and achieve your dreams is an absolute privilege. Never stop being your authentic, wonderful self. You inspire me every single day!", 
       from: "David Adesta", 
-      color: "bg-[#fff9fb]", 
+      color: "bg-[#fff5fb]", 
       rotation: 3, 
       icon: "😺" 
     },
     { 
       text: "Wishing you a day filled with magic! 💖\n\nMay your journey be filled with beautiful moments, meaningful connections, and endless laughter. You have a heart of gold, never forget that.", 
       from: "David Adesta", 
-      color: "bg-[#f0f9ff]", 
+      color: "bg-[#fce4ec]", 
       rotation: -1, 
       icon: "😸" 
     },
@@ -718,7 +737,7 @@ function Wishes({ onNext }: { onNext: () => void }) {
     { 
       text: "Stay beautiful inside and out! 🥰\n\nYou are a true masterpiece in progress. I hope today is just the beginning of your best year yet. I'm always rooting for you. Love and light!", 
       from: "David Adesta", 
-      color: "bg-[#f4fdfa]", 
+      color: "bg-[#fff8fc]", 
       rotation: -3, 
       icon: "😽" 
     },
@@ -727,144 +746,186 @@ function Wishes({ onNext }: { onNext: () => void }) {
   const handleNextNote = () => { currentIndex < messages.length - 1 ? setCurrentIndex(currentIndex + 1) : onNext(); };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }} 
-      animate={{ opacity: 1 }} 
-      className="z-10 flex flex-col items-center justify-center p-6 w-full h-full min-h-screen relative overflow-hidden"
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="z-10 flex flex-col items-center justify-center w-full min-h-screen relative overflow-hidden"
+      style={{ background: "linear-gradient(160deg, #fff5fb 0%, #ffffff 50%, #fce4ec 100%)" }}
     >
-      <div className="absolute inset-0 bg-pink-primary/5 -z-10" />
-      
-      <div className="relative w-full max-w-sm sm:max-w-md h-[34rem] flex items-center justify-center pt-10">
+      {/* Soft bg blobs */}
+      <div className="absolute top-0 right-0 w-64 h-64 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, #fce4ec, transparent)", opacity: 0.5, filter: "blur(50px)" }} />
+      <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, #fce4ec, transparent)", opacity: 0.4, filter: "blur(50px)" }} />
+
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="flex flex-col items-center mb-4 mt-8 px-6 z-10"
+      >
+        <p className="text-[10px] font-black tracking-[0.45em] uppercase mb-1" style={{ color: "#f06292", opacity: 0.5 }}>Sweet Notes</p>
+        <h2 className="text-2xl font-black" style={{ color: "#e91e8c" }}>For You 💌</h2>
+        {/* Progress dots */}
+        <div className="flex gap-2 mt-3">
+          {messages.map((_, i) => (
+            <motion.div
+              key={i}
+              animate={{ scale: i === currentIndex ? 1.3 : 1, opacity: i <= currentIndex ? 1 : 0.3 }}
+              className="h-1.5 rounded-full"
+              style={{ width: i === currentIndex ? 20 : 6, background: "#f06292", transition: "all 0.3s" }}
+            />
+          ))}
+        </div>
+      </motion.div>
+
+      {/* Note stack */}
+      <div className="relative w-full max-w-[340px] mx-auto px-4 flex items-center justify-center" style={{ height: "420px" }}>
         <AnimatePresence>
           {messages.map((msg, index) => {
             if (index < currentIndex || index > currentIndex + 2) return null;
             const isTop = index === currentIndex;
             const stackedOffset = index - currentIndex;
-            
+
             return (
-               <motion.div
+              <motion.div
                 key={index}
-                className={`absolute inset-0 rounded-[2rem] border border-pink-100 p-8 sm:p-12 flex flex-col items-center text-center cursor-pointer shadow-[0_15px_35px_-5px_rgba(0,0,0,0.1)] ${msg.color}`}
-                style={{ 
+                className={`absolute inset-0 rounded-3xl cursor-pointer border ${msg.color}`}
+                style={{
                   transformOrigin: "center bottom",
-                  backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.4) 0%, transparent 100%)',
-                  willChange: "transform, opacity"
+                  willChange: "transform, opacity",
+                  transform: "translateZ(0)",
+                  borderColor: "#f9a8d4",
+                  boxShadow: isTop ? "0 16px 40px -8px rgba(240,98,146,0.25)" : "0 8px 20px -4px rgba(240,98,146,0.1)"
                 }}
-                animate={{ 
-                  y: stackedOffset * 12, 
-                  x: stackedOffset * 5, 
-                  scale: 1 - stackedOffset * 0.05, 
-                  rotate: isTop ? msg.rotation : msg.rotation + (stackedOffset * 2.5), 
+                animate={{
+                  y: stackedOffset * 10,
+                  x: stackedOffset * 4,
+                  scale: 1 - stackedOffset * 0.04,
+                  rotate: isTop ? msg.rotation : msg.rotation + stackedOffset * 2,
                   zIndex: messages.length - index,
-                  opacity: 1 - (stackedOffset * 0.15)
+                  opacity: 1 - stackedOffset * 0.18
                 }}
-                exit={{ x: -600, y: 100, rotate: -45, opacity: 0 }}
-                transition={{ type: "spring", stiffness: 100, damping: 20 }}
+                exit={{ x: -500, y: 80, rotate: -35, opacity: 0 }}
+                transition={{ type: "spring", stiffness: 120, damping: 22 }}
                 onClick={isTop ? handleNextNote : undefined}
               >
-                {/* Paper Texture Overlay */}
-                <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/felt.png')] rounded-[2rem]" />
-                
-                <Paperclip className="absolute -top-7 right-14 w-16 h-16 text-pink-primary/20 stroke-[2] drop-shadow-sm z-30" />
-                
-                {/* Animated Cat Emoji */}
+                {/* Top accent bar */}
+                <div className="absolute top-0 inset-x-0 h-1.5 rounded-t-3xl" style={{ background: "linear-gradient(90deg, #f9a8d4, #f06292, #f9a8d4)" }} />
+
+                {/* Paperclip */}
+                <Paperclip className="absolute -top-5 right-10 w-10 h-10 rotate-12 drop-shadow-sm z-30" style={{ color: "#f9a8d4" }} />
+
+                {/* Cat emoji - top left */}
                 {isTop && (
                   <motion.div
-                    initial={{ scale: 0, rotate: -30 }}
-                    animate={{ scale: 1, rotate: [-8, 8, -8] }}
+                    initial={{ scale: 0, rotate: -20 }}
+                    animate={{ scale: 1, rotate: [-6, 6, -6] }}
                     transition={{
-                      scale: { type: "spring", stiffness: 250, delay: 0.3 },
+                      scale: { type: "spring", stiffness: 300, delay: 0.2 },
                       rotate: { repeat: Infinity, duration: 3, ease: "easeInOut" }
                     }}
-                    className="absolute -top-16 left-6 text-7xl md:text-9xl drop-shadow-2xl z-50 select-none"
+                    className="absolute -top-10 left-4 text-5xl z-50 select-none drop-shadow-lg"
                     style={{ willChange: "transform" }}
                   >
                     {msg.icon}
                   </motion.div>
                 )}
-                
-                <div className="flex-1 flex flex-col justify-center w-full mt-12 relative z-10 overflow-y-auto custom-scrollbar">
-                  <p className="font-serif italic text-pink-primary/30 text-[10px] tracking-[0.4em] uppercase mb-10">Secret Wish</p>
-                  <p className="font-black text-gray-800 text-xl sm:text-2xl md:text-3xl leading-[1.4] tracking-tight mb-8 whitespace-pre-wrap break-words px-2">
-                    {msg.text}
-                  </p>
-                </div>
-                
-                <div className="w-full text-right mt-auto pt-6 border-t border-pink-100/50 mb-4 z-10">
-                  <p className="font-serif italic text-pink-primary/60 text-2xl tracking-tighter">— {msg.from}</p>
+
+                {/* Note content */}
+                <div className="flex flex-col h-full pt-8 pb-10 px-6">
+                  {/* Label */}
+                  <p className="text-[9px] font-black tracking-[0.4em] uppercase mb-3" style={{ color: "#f06292", opacity: 0.5 }}>✨ Secret Wish ✨</p>
+
+                  {/* Message text */}
+                  <div className="flex-1 overflow-hidden">
+                    <p className="text-sm font-bold leading-relaxed whitespace-pre-wrap break-words" style={{ color: "#4a4a5a", lineHeight: 1.7 }}>
+                      {msg.text}
+                    </p>
+                  </div>
+
+                  {/* Divider + from */}
+                  <div className="mt-4 pt-3 flex items-center justify-between" style={{ borderTop: "1px dashed #f9a8d4" }}>
+                    <div className="flex gap-1">
+                      {["💕","🌸","✨"].map((e, i) => <span key={i} className="text-xs">{e}</span>)}
+                    </div>
+                    <p className="text-sm font-black italic" style={{ color: "#e91e8c" }}>— {msg.from}</p>
+                  </div>
                 </div>
 
-                {/* Cat Paws holding the letter - More integrated */}
+                {/* Cat paws at the bottom */}
                 {isTop && (
-                  <div className="absolute -bottom-8 inset-x-0 flex justify-between px-8 z-50 pointer-events-none">
-                    <motion.div 
-                      initial={{ y: 20, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      className="scale-90 md:scale-100"
-                    >
-                      <div className="w-16 h-20 bg-white border-2 border-pink-50 rounded-t-full shadow-lg relative flex flex-col items-center">
-                        <div className="flex gap-1 mt-1.5 px-2">
-                           {[1,2,3].map(i => <div key={i} className="w-3 h-4 bg-pink-100 rounded-full" />)}
+                  <div className="absolute -bottom-9 inset-x-0 flex justify-between px-8 z-50 pointer-events-none">
+                    <motion.div initial={{ y: 16, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.4 }}>
+                      <div className="w-14 h-16 rounded-t-full flex flex-col items-center pt-1.5 gap-0.5" style={{ background: "#fff0f8", border: "2px solid #f9a8d4" }}>
+                        <div className="flex gap-0.5">
+                          {[0,1,2].map(i => <div key={i} className="w-2.5 h-3.5 rounded-full" style={{ background: "#fce4ec", border: "1px solid #f9a8d4" }} />)}
                         </div>
-                        <div className="absolute bottom-2 w-10 h-7 bg-pink-50 rounded-full opacity-60" />
+                        <div className="w-8 h-5 rounded-full mt-0.5" style={{ background: "#fce4ec", border: "1px solid #f9a8d4" }} />
                       </div>
                     </motion.div>
-
-                    <motion.div 
-                      initial={{ y: 20, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      className="scale-90 md:scale-100"
-                    >
-                      <div className="w-16 h-20 bg-white border-2 border-pink-50 rounded-t-full shadow-lg relative flex flex-col items-center">
-                        <div className="flex gap-1 mt-1.5 px-2">
-                           {[1,2,3].map(i => <div key={i} className="w-3 h-4 bg-pink-100 rounded-full" />)}
+                    <motion.div initial={{ y: 16, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.5 }}>
+                      <div className="w-14 h-16 rounded-t-full flex flex-col items-center pt-1.5 gap-0.5" style={{ background: "#fff0f8", border: "2px solid #f9a8d4" }}>
+                        <div className="flex gap-0.5">
+                          {[0,1,2].map(i => <div key={i} className="w-2.5 h-3.5 rounded-full" style={{ background: "#fce4ec", border: "1px solid #f9a8d4" }} />)}
                         </div>
-                        <div className="absolute bottom-2 w-10 h-7 bg-pink-50 rounded-full opacity-60" />
+                        <div className="w-8 h-5 rounded-full mt-0.5" style={{ background: "#fce4ec", border: "1px solid #f9a8d4" }} />
                       </div>
                     </motion.div>
                   </div>
-                )}
-                
-                {isTop && (
-                  <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="absolute -bottom-16 left-1/2 -translate-x-1/2"
-                  >
-                    <p className="text-[10px] font-black text-pink-primary/30 uppercase tracking-[0.5em] animate-pulse">
-                      Tap to continue
-                    </p>
-                  </motion.div>
                 )}
               </motion.div>
             );
           })}
         </AnimatePresence>
       </div>
+
+      {/* Tap hint */}
+      <motion.div
+        animate={{ opacity: [0.4, 1, 0.4] }}
+        transition={{ repeat: Infinity, duration: 2 }}
+        className="mt-4 flex flex-col items-center gap-2 z-10 pb-8"
+      >
+        <p className="text-[10px] font-black uppercase tracking-[0.4em]" style={{ color: "#f06292", opacity: 0.5 }}>
+          {currentIndex < messages.length - 1 ? "Tap card to continue" : "Tap for final surprise 🎁"}
+        </p>
+        <div className="flex gap-1.5">
+          {[0,1,2].map(i => (
+            <motion.div key={i} animate={{ scale: [1,1.5,1], opacity: [0.3,1,0.3] }} transition={{ repeat: Infinity, duration: 1.4, delay: i*0.25 }} className="w-1.5 h-1.5 rounded-full" style={{ background: "#f48fb1" }} />
+          ))}
+        </div>
+      </motion.div>
     </motion.div>
   );
 }
 
 function Credits() {
   return (
-    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="z-10 flex flex-col items-center p-14 bg-white/90 backdrop-blur-2xl rounded-[3rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] border border-white max-w-xs w-full relative overflow-hidden">
-      <div className="absolute -top-20 -right-20 w-40 h-40 bg-pink-100/50 rounded-full blur-3xl" />
-      <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-pink-100/50 rounded-full blur-3xl opacity-60" />
-      
-      <h2 className="text-[9px] font-black text-pink-primary mb-14 tracking-[0.5em] uppercase opacity-40">Digital Experience</h2>
-      <div className="flex flex-col gap-12 text-center w-full z-10">
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="z-10 flex flex-col items-center p-12 rounded-[3rem] border border-pink-100 max-w-xs w-full relative overflow-hidden mx-6"
+      style={{ background: "linear-gradient(160deg, #fff5fb 0%, #ffffff 60%, #fce4ec 100%)", boxShadow: "0 30px 80px -15px rgba(240,98,146,0.2)" }}
+    >
+      <div className="absolute -top-16 -right-16 w-36 h-36 rounded-full" style={{ background: "radial-gradient(circle, #fce4ec, transparent)", opacity: 0.7 }} />
+      <div className="absolute -bottom-16 -left-16 w-36 h-36 rounded-full" style={{ background: "radial-gradient(circle, #fce4ec, transparent)", opacity: 0.5 }} />
+
+      <div className="text-4xl mb-6">🎀</div>
+      <h2 className="text-[9px] font-black mb-12 tracking-[0.5em] uppercase" style={{ color: "#f06292", opacity: 0.5 }}>Made with Love</h2>
+      <div className="flex flex-col gap-10 text-center w-full z-10">
         <div>
-          <p className="text-[8px] text-pink-primary/40 uppercase tracking-[0.3em] font-black mb-4">Art Direction</p>
-          <p className="text-3xl font-serif italic text-black tracking-tighter">David Adesta</p>
+          <p className="text-[8px] uppercase tracking-[0.3em] font-black mb-3" style={{ color: "#f06292", opacity: 0.45 }}>From</p>
+          <p className="text-3xl font-black" style={{ color: "#e91e8c" }}>David Adesta</p>
         </div>
-        <div className="w-8 h-[2px] bg-pink-primary/20 mx-auto" />
+        <div className="w-8 h-[2px] mx-auto rounded-full" style={{ background: "#f48fb1" }} />
         <div>
-          <p className="text-[8px] text-pink-primary/40 uppercase tracking-[0.3em] font-black mb-4">Production</p>
-          <p className="text-xl font-black text-black tracking-tighter">Happy Moments Studio</p>
+          <p className="text-[8px] uppercase tracking-[0.3em] font-black mb-3" style={{ color: "#f06292", opacity: 0.45 }}>Studio</p>
+          <p className="text-lg font-black" style={{ color: "#c2185b" }}>Happy Moments 🌸</p>
         </div>
       </div>
-      <motion.div animate={{ y: [0, -5, 0], scale: [1, 1.1, 1] }} transition={{ repeat: Infinity, duration: 3 }} className="mt-16"><Heart className="w-12 h-12 fill-pink-primary text-pink-primary drop-shadow-xl" /></motion.div>
-      <p className="mt-12 text-[8px] font-black text-pink-primary/20 uppercase tracking-[0.3em]">Built for you with love</p>
+      <motion.div animate={{ y: [0, -6, 0], scale: [1, 1.12, 1] }} transition={{ repeat: Infinity, duration: 2.8 }} className="mt-14">
+        <Heart className="w-12 h-12 drop-shadow-xl" style={{ fill: "#f06292", color: "#f06292" }} />
+      </motion.div>
+      <p className="mt-8 text-[8px] font-black uppercase tracking-[0.3em]" style={{ color: "#f48fb1", opacity: 0.5 }}>Built for you with love 💕</p>
     </motion.div>
   );
 }
