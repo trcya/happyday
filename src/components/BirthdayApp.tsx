@@ -809,36 +809,14 @@ function Wishes({ onNext }: { onNext: () => void }) {
                 transition={{ type: "spring", stiffness: 120, damping: 22 }}
                 onClick={isTop ? handleNextNote : undefined}
               >
-                {/* Top accent bar */}
-                <div className="absolute top-0 inset-x-0 h-1.5 rounded-t-3xl" style={{ background: "linear-gradient(90deg, #f9a8d4, #f06292, #f9a8d4)" }} />
-
-                {/* Paperclip */}
-                <Paperclip className="absolute -top-5 right-10 w-10 h-10 rotate-12 drop-shadow-sm z-30" style={{ color: "#f9a8d4" }} />
-
-                {/* Cat emoji - top left */}
-                {isTop && (
-                  <motion.div
-                    initial={{ scale: 0, rotate: -20 }}
-                    animate={{ scale: 1, rotate: [-6, 6, -6] }}
-                    transition={{
-                      scale: { type: "spring", stiffness: 300, delay: 0.2 },
-                      rotate: { repeat: Infinity, duration: 3, ease: "easeInOut" }
-                    }}
-                    className="absolute -top-10 left-4 text-5xl z-50 select-none drop-shadow-lg"
-                    style={{ willChange: "transform" }}
-                  >
-                    {msg.icon}
-                  </motion.div>
-                )}
-
                 {/* Note content */}
-                <div className="flex flex-col h-full pt-8 pb-10 px-6">
+                <div className="flex flex-col h-full pt-10 pb-10 px-6">
                   {/* Label */}
                   <p className="text-[9px] font-black tracking-[0.4em] uppercase mb-3" style={{ color: "#f06292", opacity: 0.5 }}>✨ Secret Wish ✨</p>
 
                   {/* Message text */}
                   <div className="flex-1 overflow-hidden">
-                    <p className="text-sm font-bold leading-relaxed whitespace-pre-wrap break-words" style={{ color: "#4a4a5a", lineHeight: 1.7 }}>
+                    <p className="text-sm font-bold leading-relaxed whitespace-pre-wrap break-words" style={{ color: "#4a4a5a", lineHeight: 1.65 }}>
                       {msg.text}
                     </p>
                   </div>
@@ -852,23 +830,55 @@ function Wishes({ onNext }: { onNext: () => void }) {
                   </div>
                 </div>
 
-                {/* Cat paws at the bottom */}
+                {/* Top accent: Washi Tape style */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 opacity-80 z-20" 
+                  style={{ 
+                    background: "rgba(249, 168, 212, 0.4)", 
+                    backdropFilter: "blur(4px)",
+                    transform: "rotate(-2deg) translateY(-50%)",
+                    border: "1px solid rgba(255, 255, 255, 0.5)",
+                    borderRadius: "2px"
+                  }} 
+                />
+
+                {/* Paperclip: Better alignment */}
+                <div className="absolute -top-4 right-8 z-30" style={{ transform: "rotate(15deg) translateZ(0)", willChange: "transform" }}>
+                  <Paperclip className="w-9 h-9" style={{ color: "#f06292", filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.1))" }} />
+                </div>
+
+                {/* Cat emoji: Neater placement */}
                 {isTop && (
-                  <div className="absolute -bottom-9 inset-x-0 flex justify-between px-8 z-50 pointer-events-none">
-                    <motion.div initial={{ y: 16, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.4 }}>
-                      <div className="w-14 h-16 rounded-t-full flex flex-col items-center pt-1.5 gap-0.5" style={{ background: "#fff0f8", border: "2px solid #f9a8d4" }}>
+                  <motion.div
+                    initial={{ scale: 0, y: 10 }}
+                    animate={{ scale: 1, y: 0, rotate: [-5, 5, -5] }}
+                    transition={{
+                      scale: { type: "spring", stiffness: 300, delay: 0.2 },
+                      rotate: { repeat: Infinity, duration: 4, ease: "easeInOut" }
+                    }}
+                    className="absolute -top-12 left-6 text-5xl z-40 select-none"
+                    style={{ willChange: "transform", filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.12))", transform: "translateZ(0)" }}
+                  >
+                    {msg.icon}
+                  </motion.div>
+                )}
+
+                {/* Cat paws at the bottom: Smoother for Android */}
+                {isTop && (
+                  <div className="absolute -bottom-8 inset-x-0 flex justify-between px-10 z-50 pointer-events-none">
+                    <motion.div initial={{ y: 12, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.4 }} style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}>
+                      <div className="w-12 h-14 rounded-t-full flex flex-col items-center pt-1 gap-0.5" style={{ background: "#fff5fb", border: "2px solid #f9a8d4", boxShadow: "0 4px 10px rgba(240,98,146,0.15)" }}>
                         <div className="flex gap-0.5">
-                          {[0,1,2].map(i => <div key={i} className="w-2.5 h-3.5 rounded-full" style={{ background: "#fce4ec", border: "1px solid #f9a8d4" }} />)}
+                          {[0,1,2].map(i => <div key={i} className="w-2 h-3 rounded-full" style={{ background: "#fce4ec" }} />)}
                         </div>
-                        <div className="w-8 h-5 rounded-full mt-0.5" style={{ background: "#fce4ec", border: "1px solid #f9a8d4" }} />
+                        <div className="w-6 h-4 rounded-full mt-0.5" style={{ background: "#fce4ec" }} />
                       </div>
                     </motion.div>
-                    <motion.div initial={{ y: 16, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.5 }}>
-                      <div className="w-14 h-16 rounded-t-full flex flex-col items-center pt-1.5 gap-0.5" style={{ background: "#fff0f8", border: "2px solid #f9a8d4" }}>
+                    <motion.div initial={{ y: 12, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.5 }} style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}>
+                      <div className="w-12 h-14 rounded-t-full flex flex-col items-center pt-1 gap-0.5" style={{ background: "#fff5fb", border: "2px solid #f9a8d4", boxShadow: "0 4px 10px rgba(240,98,146,0.15)" }}>
                         <div className="flex gap-0.5">
-                          {[0,1,2].map(i => <div key={i} className="w-2.5 h-3.5 rounded-full" style={{ background: "#fce4ec", border: "1px solid #f9a8d4" }} />)}
+                          {[0,1,2].map(i => <div key={i} className="w-2 h-3 rounded-full" style={{ background: "#fce4ec" }} />)}
                         </div>
-                        <div className="w-8 h-5 rounded-full mt-0.5" style={{ background: "#fce4ec", border: "1px solid #f9a8d4" }} />
+                        <div className="w-6 h-4 rounded-full mt-0.5" style={{ background: "#fce4ec" }} />
                       </div>
                     </motion.div>
                   </div>
