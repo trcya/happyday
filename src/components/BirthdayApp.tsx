@@ -410,18 +410,23 @@ function Landing({ onNext, onCollect, collected }: { onNext: () => void; onColle
         {/* Hidden Key Piece 1 */}
         {!collected && (
           <motion.div
-            className="absolute bottom-12 left-12 z-50 cursor-pointer p-4"
+            className="absolute bottom-16 left-16 z-50 cursor-pointer p-6"
             initial={{ opacity: 0, scale: 0 }}
             animate={{ 
-              opacity: [0.6, 1, 0.6], 
-              scale: [1, 1.3, 1],
+              opacity: [0.7, 1, 0.7], 
+              scale: [1, 1.4, 1],
             }}
-            whileHover={{ scale: 1.5, filter: "drop-shadow(0 0 20px #f06292)" }}
-            transition={{ repeat: Infinity, duration: 2.5 }}
+            whileHover={{ scale: 1.6, filter: "drop-shadow(0 0 25px #f06292)" }}
+            transition={{ repeat: Infinity, duration: 2 }}
             onClick={(e) => { e.stopPropagation(); onCollect(); }}
           >
-            <KeyPiece id={1} size={32} className="text-pink-400" />
-            <div className="absolute inset-0 bg-pink-200/20 blur-xl rounded-full -z-10 animate-pulse" />
+            <KeyPiece id={1} size={36} className="text-pink-400" />
+            <div className="absolute inset-0 bg-pink-300/40 blur-2xl rounded-full -z-10 animate-pulse" />
+            <motion.div 
+              className="absolute inset-0 border-2 border-pink-200 rounded-full -z-20"
+              animate={{ scale: [1, 2], opacity: [0.5, 0] }}
+              transition={{ repeat: Infinity, duration: 2 }}
+            />
           </motion.div>
         )}
       </div>
@@ -492,19 +497,34 @@ function Greeting({ onNext, onPrev, onCollect, collected }: { onNext: () => void
       exit={{ opacity: 0, scale: 1.1, filter: "blur(10px)" }}
       className="z-10 flex flex-col items-center text-center px-6 max-w-lg w-full min-h-screen justify-center py-12 relative overflow-hidden"
     >
-      {/* Floating Balloons */}
-      <div className="absolute inset-0 pointer-events-none z-30">
+      {/* Balloons: Optimized for Android */}
+      <div className="fixed inset-0 pointer-events-none z-40 overflow-hidden">
         {balloons.map((b) => (
           <motion.div
             key={b.id}
-            initial={{ y: "120vh", x: `${b.x}vw`, opacity: 0.8 }}
-            animate={{ y: "-20vh", x: `${b.x + (Math.random() * 10 - 5)}vw` }}
-            transition={{ duration: 6 + Math.random() * 4, delay: b.delay, ease: "easeOut" }}
-            className="absolute flex flex-col items-center"
+            initial={{ y: "120vh", x: `${b.x}vw`, opacity: 0 }}
+            animate={{ y: "-20vh", opacity: [0, 1, 1, 0] }}
+            transition={{
+              duration: 8,
+              delay: b.delay,
+              ease: "linear",
+              repeat: Infinity
+            }}
+            className="absolute"
+            style={{ 
+              willChange: "transform",
+              transform: "translateZ(0)"
+            }}
           >
             <div 
-              className="rounded-full shadow-lg border-2 border-white/20 relative"
-              style={{ width: b.size, height: b.size * 1.2, background: b.color }}
+              style={{ 
+                width: b.size, 
+                height: b.size * 1.2, 
+                backgroundColor: b.color,
+                borderRadius: "50% 50% 50% 50% / 40% 40% 60% 60%",
+                boxShadow: `inset -5px -5px 15px rgba(0,0,0,0.1), 0 5px 15px ${b.color}44`,
+                position: "relative"
+              }}
             >
               <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full w-0.5 h-12 bg-white/40" />
             </div>
@@ -679,18 +699,23 @@ function Greeting({ onNext, onPrev, onCollect, collected }: { onNext: () => void
         {/* Hidden Key Piece 2 */}
         {!collected && showCake && (
           <motion.div
-            className="absolute -bottom-6 -right-12 z-50 cursor-pointer p-4"
+            className="absolute -bottom-10 -right-16 z-50 cursor-pointer p-6"
             initial={{ opacity: 0, scale: 0 }}
             animate={{ 
-              opacity: [0.6, 1, 0.6],
-              scale: [1, 1.3, 1]
+              opacity: [0.7, 1, 0.7],
+              scale: [1, 1.4, 1]
             }}
-            transition={{ repeat: Infinity, duration: 2.5 }}
-            whileHover={{ scale: 1.5, filter: "drop-shadow(0 0 20px #f06292)" }}
+            transition={{ repeat: Infinity, duration: 2 }}
+            whileHover={{ scale: 1.6, filter: "drop-shadow(0_0_25px_#f06292)" }}
             onClick={(e) => { e.stopPropagation(); onCollect(); }}
           >
-            <KeyPiece id={2} size={32} className="text-pink-300" />
-            <div className="absolute inset-0 bg-pink-100/30 blur-xl rounded-full -z-10" />
+            <KeyPiece id={2} size={36} className="text-pink-400" />
+            <div className="absolute inset-0 bg-pink-200/40 blur-2xl rounded-full -z-10 animate-pulse" />
+            <motion.div 
+              className="absolute inset-0 border-2 border-pink-200 rounded-full -z-20"
+              animate={{ scale: [1, 2], opacity: [0.5, 0] }}
+              transition={{ repeat: Infinity, duration: 2 }}
+            />
           </motion.div>
         )}
       </div>
@@ -835,17 +860,22 @@ function Gallery({ onNext, onPrev, onCollect, collected }: { onNext: () => void;
         {/* Hidden Key Piece 3 */}
         {!collected && (
           <motion.div
-            className="absolute top-0 right-0 z-50 cursor-pointer p-4"
+            className="absolute -top-4 -right-12 z-50 cursor-pointer p-6"
             animate={{ 
-              opacity: [0.6, 1, 0.6],
-              scale: [1, 1.3, 1]
+              opacity: [0.7, 1, 0.7],
+              scale: [1, 1.4, 1]
             }}
-            transition={{ repeat: Infinity, duration: 3 }}
-            whileHover={{ scale: 1.5, filter: "drop-shadow(0 0 20px #f06292)" }}
+            transition={{ repeat: Infinity, duration: 2 }}
+            whileHover={{ scale: 1.6, filter: "drop-shadow(0_0_25px_#f06292)" }}
             onClick={(e) => { e.stopPropagation(); onCollect(); }}
           >
-            <KeyPiece id={3} size={32} className="text-pink-400" />
-            <div className="absolute inset-0 bg-pink-100/20 blur-xl rounded-full -z-10" />
+            <KeyPiece id={3} size={36} className="text-pink-400" />
+            <div className="absolute inset-0 bg-pink-200/40 blur-2xl rounded-full -z-10 animate-pulse" />
+            <motion.div 
+              className="absolute inset-0 border-2 border-pink-200 rounded-full -z-20"
+              animate={{ scale: [1, 2], opacity: [0.5, 0] }}
+              transition={{ repeat: Infinity, duration: 2 }}
+            />
           </motion.div>
         )}
       </div>
@@ -1059,17 +1089,28 @@ function Wishes({ onNext, onPrev, onCollect, collected }: { onNext: () => void; 
                 {/* Hidden Key Piece 4 - Only on the 3rd note */}
                 {!collected && index === 2 && (
                    <motion.div
-                    className="absolute -bottom-4 -right-4 z-50 cursor-pointer p-6"
+                    className="absolute -top-12 -right-12 z-[100] cursor-pointer p-10"
                     animate={{ 
-                      opacity: [0.6, 1, 0.6],
-                      scale: [1, 1.3, 1]
+                      opacity: [0.9, 1, 0.9],
+                      scale: [1, 1.8, 1],
+                      filter: ["drop-shadow(0 0 10px #f06292)", "drop-shadow(0 0 40px #f06292)", "drop-shadow(0 0 10px #f06292)"]
                     }}
-                    transition={{ repeat: Infinity, duration: 2 }}
-                    whileHover={{ scale: 1.5, filter: "drop-shadow(0 0 20px #f06292)" }}
+                    transition={{ repeat: Infinity, duration: 1.2 }}
+                    whileHover={{ scale: 2 }}
                     onClick={(e) => { e.stopPropagation(); onCollect(); }}
                   >
-                    <KeyPiece id={4} size={32} className="text-pink-500" />
-                    <div className="absolute inset-0 bg-pink-200/30 blur-xl rounded-full -z-10" />
+                    <KeyPiece id={4} size={48} className="text-pink-500" />
+                    <div className="absolute inset-0 bg-pink-400/60 blur-[40px] rounded-full -z-10 animate-pulse" />
+                    <motion.div 
+                      className="absolute inset-0 border-4 border-pink-400 rounded-full -z-20"
+                      animate={{ scale: [1, 3], opacity: [0.8, 0] }}
+                      transition={{ repeat: Infinity, duration: 1 }}
+                    />
+                    <motion.div 
+                      className="absolute inset-0 border-2 border-pink-200 rounded-full -z-20"
+                      animate={{ scale: [1, 4], opacity: [0.6, 0] }}
+                      transition={{ repeat: Infinity, duration: 1.5, delay: 0.2 }}
+                    />
                   </motion.div>
                 )}
               </motion.div>
