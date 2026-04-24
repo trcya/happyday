@@ -1089,27 +1089,22 @@ function Wishes({ onNext, onPrev, onCollect, collected }: { onNext: () => void; 
                 {/* Hidden Key Piece 4 - Only on the 3rd note */}
                 {!collected && index === 2 && (
                    <motion.div
-                    className="absolute -top-12 -right-12 z-[100] cursor-pointer p-10"
+                    className="absolute -top-10 -right-10 z-[100] cursor-pointer p-8"
                     animate={{ 
-                      opacity: [0.9, 1, 0.9],
-                      scale: [1, 1.8, 1],
-                      filter: ["drop-shadow(0 0 10px #f06292)", "drop-shadow(0 0 40px #f06292)", "drop-shadow(0 0 10px #f06292)"]
+                      opacity: [0.8, 1, 0.8],
+                      scale: [1, 1.4, 1],
+                      filter: ["drop-shadow(0 0 8px #f06292)", "drop-shadow(0 0 20px #f06292)", "drop-shadow(0 0 8px #f06292)"]
                     }}
-                    transition={{ repeat: Infinity, duration: 1.2 }}
-                    whileHover={{ scale: 2 }}
+                    transition={{ repeat: Infinity, duration: 1.5 }}
+                    whileHover={{ scale: 1.8 }}
                     onClick={(e) => { e.stopPropagation(); onCollect(); }}
                   >
-                    <KeyPiece id={4} size={48} className="text-pink-500" />
-                    <div className="absolute inset-0 bg-pink-400/60 blur-[40px] rounded-full -z-10 animate-pulse" />
+                    <KeyPiece id={4} size={36} className="text-pink-500" />
+                    <div className="absolute inset-0 bg-pink-400/40 blur-[25px] rounded-full -z-10 animate-pulse" />
                     <motion.div 
-                      className="absolute inset-0 border-4 border-pink-400 rounded-full -z-20"
-                      animate={{ scale: [1, 3], opacity: [0.8, 0] }}
-                      transition={{ repeat: Infinity, duration: 1 }}
-                    />
-                    <motion.div 
-                      className="absolute inset-0 border-2 border-pink-200 rounded-full -z-20"
-                      animate={{ scale: [1, 4], opacity: [0.6, 0] }}
-                      transition={{ repeat: Infinity, duration: 1.5, delay: 0.2 }}
+                      className="absolute inset-0 border-2 border-pink-400 rounded-full -z-20"
+                      animate={{ scale: [1, 2.5], opacity: [0.5, 0] }}
+                      transition={{ repeat: Infinity, duration: 1.8 }}
                     />
                   </motion.div>
                 )}
@@ -1463,24 +1458,24 @@ function FinalGiftModal({ onClose, canUnlock }: { onClose: () => void; canUnlock
               className="relative flex items-end justify-center mb-10"
               style={{ width: 280, height: 240, perspective: "900px", perspectiveOrigin: "50% 70%" }}
             >
-              {/* ── Light Rays (shoot upward when open) ── */}
+              {/* ── Light Rays: Simplified for Android ── */}
               {isUnlocked && (
                 <div className="absolute inset-0 pointer-events-none z-40 flex items-center justify-center" style={{ top: '20%' }}>
-                  {[...Array(8)].map((_, i) => (
+                  {[...Array(6)].map((_, i) => (
                     <motion.div
                       key={i}
                       initial={{ scaleY: 0, opacity: 0 }}
-                      animate={{ scaleY: 1, opacity: [0, 0.6, 0] }}
-                      transition={{ duration: 1.6, delay: 0.3 + i * 0.07, ease: "easeOut", repeat: Infinity, repeatDelay: 3 }}
+                      animate={{ scaleY: 1, opacity: [0, 0.5, 0] }}
+                      transition={{ duration: 2, delay: 0.3 + i * 0.1, ease: "linear", repeat: Infinity, repeatDelay: 2 }}
                       className="absolute origin-bottom"
                       style={{
-                        width: 6,
-                        height: 120 + i * 10,
-                        background: `linear-gradient(to top, rgba(255,182,213,0.9), transparent)`,
-                        transform: `rotate(${-70 + i * 20}deg)`,
+                        width: 4,
+                        height: 100 + i * 8,
+                        background: `linear-gradient(to top, rgba(255,182,213,0.7), transparent)`,
+                        transform: `rotate(${-60 + i * 24}deg)`,
                         bottom: 0,
                         borderRadius: 4,
-                        filter: "blur(2px)",
+                        willChange: "transform, opacity"
                       }}
                     />
                   ))}
@@ -1552,9 +1547,10 @@ function FinalGiftModal({ onClose, canUnlock }: { onClose: () => void; canUnlock
                     className="absolute inset-0 rounded-t-2xl"
                     style={{
                       background: "linear-gradient(170deg, #fbcfe8 0%, #f9a8d4 40%, #ec4899 100%)",
-                      boxShadow: "0 -6px 20px rgba(236,72,153,0.3)",
-                      border: "3px solid #db2777",
+                      boxShadow: "0 -4px 15px rgba(236,72,153,0.2)",
+                      border: "2px solid #db2777",
                       borderBottom: "none",
+                      willChange: "transform"
                     }}
                   >
                     {/* Lid highlights */}
