@@ -1339,50 +1339,81 @@ function SurpriseFinale({ keyReady, onPrev }: { keyReady: boolean; onPrev: () =>
 }
 
 function KeyInventory({ collectedCount, total, reconstructed }: { collectedCount: number; total: number; reconstructed: boolean }) {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <div className="fixed top-6 left-6 z-[100] flex flex-col gap-2">
+    <div className="fixed top-4 left-4 z-[150] flex flex-col gap-2 max-w-[calc(100vw-32px)]">
       <motion.div 
-        className="bg-white/70 backdrop-blur-md border border-pink-200 p-3 rounded-2xl shadow-lg flex items-center gap-3"
+        layout
+        onClick={() => setIsOpen(!isOpen)}
+        className="bg-white/80 backdrop-blur-md border border-pink-200 p-2 rounded-2xl shadow-lg cursor-pointer flex items-center gap-3 overflow-hidden"
         initial={{ x: -100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
+        style={{ willChange: "transform, opacity" }}
       >
-        <div className="relative">
-          <Key className={`w-5 h-5 ${reconstructed ? "text-pink-500" : "text-pink-200"}`} />
-          {reconstructed && (
+        {/* Toggleable Icon / Summary */}
+        <div className="flex items-center gap-2">
+          <div className="relative flex-shrink-0">
+            <Key className={`w-5 h-5 transition-colors duration-500 ${reconstructed ? "text-pink-600" : (collectedCount > 0 ? "text-pink-400" : "text-pink-200")}`} />
+            {reconstructed && (
+              <motion.div 
+                className="absolute inset-0 bg-pink-400 rounded-full blur-sm -z-10"
+                animate={{ scale: [1, 1.4, 1], opacity: [0.4, 0.7, 0.4] }}
+                transition={{ repeat: Infinity, duration: 2 }}
+              />
+            )}
+          </div>
+          
+          {!isOpen && (
             <motion.div 
-              className="absolute inset-0 bg-pink-400 rounded-full blur-md -z-10"
-              animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0.8, 0.5] }}
-              transition={{ repeat: Infinity, duration: 2 }}
-            />
+              initial={{ opacity: 0, width: 0 }}
+              animate={{ opacity: 1, width: "auto" }}
+              className="flex flex-col items-start leading-tight"
+            >
+              <p className="text-[10px] font-black text-pink-600">{collectedCount}/{total}</p>
+              <p className="text-[7px] font-bold uppercase tracking-tighter text-pink-400">Tap to see</p>
+            </motion.div>
           )}
         </div>
-        <div className="flex flex-col">
-          <p className="text-[8px] font-black uppercase tracking-widest text-pink-400">Key Fragments</p>
-          <div className="flex gap-1.5 mt-1.5">
-            {[1, 2, 3, 4].map((id) => (
-              <div 
-                key={id} 
-                className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-700 ${id <= collectedCount ? "bg-pink-100 border-pink-300 border shadow-inner" : "bg-pink-50/50 border-pink-100 border"}`}
-              >
-                <KeyPiece 
-                  id={id} 
-                  size={16} 
-                  isInventory 
-                  className={id <= collectedCount ? "text-pink-500" : "text-pink-200 opacity-50"} 
-                />
+
+        {/* Expanded Fragment View */}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div 
+              initial={{ opacity: 0, width: 0 }}
+              animate={{ opacity: 1, width: "auto" }}
+              exit={{ opacity: 0, width: 0 }}
+              className="flex flex-col border-l border-pink-100 pl-3 ml-1"
+            >
+              <p className="text-[8px] font-black uppercase tracking-widest text-pink-500 whitespace-nowrap">Key Fragments</p>
+              <div className="flex gap-1.5 mt-1.5">
+                {[1, 2, 3, 4].map((id) => (
+                  <div 
+                    key={id} 
+                    className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all duration-500 ${id <= collectedCount ? "bg-pink-100 border-pink-300 border shadow-sm" : "bg-pink-50/50 border-pink-50 border opacity-40"}`}
+                  >
+                    <KeyPiece 
+                      id={id} 
+                      size={14} 
+                      isInventory 
+                      className={id <= collectedCount ? "text-pink-600" : "text-pink-300"} 
+                    />
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
       
       {reconstructed && (
         <motion.p 
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-[9px] font-black text-pink-500 uppercase tracking-widest bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-full border border-pink-200 shadow-sm self-start"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="text-[9px] font-black text-pink-600 uppercase tracking-widest bg-pink-50/90 backdrop-blur-sm px-3 py-1.5 rounded-full border border-pink-200 shadow-sm self-start"
+          style={{ willChange: "transform, opacity" }}
         >
-          Key Reconstructed! Find the gift 🎁
+          Ready to unlock! 🎁
         </motion.p>
       )}
     </div>
