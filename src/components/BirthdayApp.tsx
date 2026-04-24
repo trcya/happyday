@@ -1392,257 +1392,210 @@ function KeyInventory({ collectedCount, total, reconstructed }: { collectedCount
 function FinalGiftModal({ onClose, canUnlock }: { onClose: () => void; canUnlock: boolean }) {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [showContent, setShowContent] = useState(false);
-  const [particles, setParticles] = useState<{ id: number; x: number; y: number; size: number; delay: number }[]>([]);
 
   const handleUnlock = () => {
-    if (!canUnlock) return;
-    
-    // Play sequence sounds
-    playSound("https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3", 0.5); // Insert key
-    
+    if (!canUnlock || isUnlocked) return;
+    playSound("https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3", 0.5);
     setTimeout(() => {
-      playSound("https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3", 0.7); // Open chest
+      playSound("https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3", 0.7);
       setIsUnlocked(true);
-      
-      // Generate pink/white particles
-      setParticles([...Array(25)].map((_, i) => ({
-        id: i,
-        x: (Math.random() - 0.5) * 350,
-        y: -100 - Math.random() * 250,
-        size: Math.random() * 8 + 4,
-        delay: Math.random() * 0.5
-      })));
-
-      setTimeout(() => setShowContent(true), 1500);
+      setTimeout(() => setShowContent(true), 1200);
     }, 600);
   };
 
   return (
-    <motion.div 
-      className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-pink-900/30 backdrop-blur-2xl"
+    <motion.div
+      className="fixed inset-0 z-[200] flex items-center justify-center bg-pink-900/25 backdrop-blur-md"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
+      style={{ padding: "16px" }}
     >
-      <motion.div 
-        className="bg-white rounded-[3.5rem] p-12 max-w-xl w-full shadow-[0_50px_100px_-20px_rgba(233,30,140,0.2)] relative overflow-hidden flex flex-col items-center text-center border-2 border-pink-50"
-        initial={{ scale: 0.8, y: 100, rotateX: 20 }}
-        animate={{ scale: 1, y: 0, rotateX: 0 }}
-        exit={{ scale: 0.8, y: 100, opacity: 0 }}
-        transition={{ type: "spring", stiffness: 100, damping: 20 }}
+      <motion.div
+        className="bg-white w-full max-w-md rounded-3xl shadow-2xl relative overflow-hidden flex flex-col items-center text-center border-2 border-pink-100"
+        initial={{ scale: 0.85, y: 60 }}
+        animate={{ scale: 1, y: 0 }}
+        exit={{ scale: 0.85, y: 60, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 200, damping: 25 }}
+        style={{ maxHeight: "92vh" }}
       >
-        <button 
+        {/* Close button */}
+        <button
           onClick={onClose}
-          className="absolute top-8 right-8 text-pink-300 hover:text-pink-500 transition-colors z-50 p-2 hover:bg-pink-50 rounded-full"
+          className="absolute top-4 right-4 text-pink-300 hover:text-pink-500 z-50 p-2 rounded-full hover:bg-pink-50 transition-colors"
         >
-          <Stars size={24} />
+          <Stars size={20} />
         </button>
 
         {!showContent ? (
-          <>
-            <div className="mb-6">
-              <motion.p 
-                animate={{ opacity: [0.5, 1, 0.5] }}
-                transition={{ repeat: Infinity, duration: 2 }}
-                className="text-[11px] font-black uppercase tracking-[0.5em] text-pink-400 mb-3"
-              >
-                Magical Surprise ✨
-              </motion.p>
-              <h2 className="text-4xl font-black text-pink-600 leading-tight">
-                {isUnlocked ? "Terbuka! 🌸" : "Buka Sekarang!"}
-              </h2>
-            </div>
-
-            {/* ═══ REALISTIC CHEST SCENE ═══ */}
-            <div
-              className="relative flex items-end justify-center mb-8"
-              style={{ width: 240, height: 200, perspective: "1000px" }}
+          <div className="flex flex-col items-center px-6 pt-8 pb-8 w-full">
+            {/* Title */}
+            <motion.p
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{ repeat: Infinity, duration: 2 }}
+              className="text-[10px] font-black uppercase tracking-[0.5em] text-pink-400 mb-1"
             >
-              {/* ── Light Rays: Ultra-Optimized ── */}
+              ✨ Magical Surprise
+            </motion.p>
+            <h2 className="text-3xl font-black text-pink-600 mb-6">
+              {isUnlocked ? "Terbuka! 🌸" : "Buka Sekarang!"}
+            </h2>
+
+            {/* ── CHEST (2D, Lightweight) ── */}
+            <div className="relative mb-8" style={{ width: 160, height: 130 }}>
+              {/* Particles when unlocked */}
               {isUnlocked && (
-                <div className="absolute inset-0 pointer-events-none z-40 flex items-center justify-center overflow-hidden" style={{ top: '25%' }}>
-                  {[...Array(4)].map((_, i) => (
+                <div className="absolute inset-0 pointer-events-none z-50">
+                  {["❤️","🌸","✨","💖","⭐","🎀","💕","🌟"].map((emoji, i) => (
                     <motion.div
                       key={i}
-                      initial={{ scaleY: 0, opacity: 0 }}
-                      animate={{ scaleY: 1, opacity: [0, 0.35, 0] }}
-                      transition={{ duration: 3, delay: 0.4 + i * 0.3, ease: "linear", repeat: Infinity, repeatDelay: 1 }}
-                      className="absolute origin-bottom"
-                      style={{
-                        width: 3,
-                        height: 110,
-                        background: `linear-gradient(to top, rgba(255,182,213,0.5), transparent)`,
-                        transform: `rotate(${-45 + i * 30}deg) translateZ(0)`,
-                        bottom: 0,
-                        willChange: "transform, opacity"
+                      initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
+                      animate={{
+                        opacity: [0, 1, 0],
+                        scale: [0, 1, 0.5],
+                        x: (i % 2 === 0 ? 1 : -1) * (30 + i * 18),
+                        y: -(60 + i * 20),
                       }}
-                    />
+                      transition={{ duration: 1.5, delay: i * 0.1, ease: "easeOut" }}
+                      className="absolute text-lg"
+                      style={{ bottom: "50%", left: "50%" }}
+                    >
+                      {emoji}
+                    </motion.div>
                   ))}
                 </div>
               )}
 
-              {/* ── Floating Hearts & Stars out of chest ── */}
-              {isUnlocked && particles.map((p) => (
+              {/* LID */}
+              <motion.div
+                className="absolute left-0 right-0 top-0 rounded-t-2xl z-20"
+                style={{
+                  height: 55,
+                  background: "linear-gradient(135deg, #fbcfe8, #f9a8d4, #ec4899)",
+                  border: "2px solid #db2777",
+                  borderBottom: "none",
+                }}
+                animate={isUnlocked ? { y: -45, opacity: 0 } : { y: 0, opacity: 1 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+              >
+                {/* Highlight */}
+                <div className="absolute inset-x-4 top-2 h-2 rounded-full opacity-40" style={{ background: "linear-gradient(to right, transparent, white, transparent)" }} />
+                {/* Lock */}
                 <motion.div
-                  key={p.id}
-                  initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
-                  animate={{ opacity: [0, 1, 0], scale: [0, 1.2, 0], x: p.x * 0.7, y: p.y }}
-                  transition={{ duration: 2.5, delay: 0.4 + p.delay, ease: "easeOut" }}
-                  className="absolute z-50 pointer-events-none"
-                  style={{ bottom: '40%', left: '50%' }}
+                  className="absolute -bottom-5 left-1/2 -translate-x-1/2 w-9 h-9 rounded-full border-4 border-white flex items-center justify-center shadow-md z-30"
+                  style={{ background: "linear-gradient(135deg,#fff,#fbcfe8)" }}
+                  animate={isUnlocked ? { scale: [1, 1.3, 0], opacity: [1, 1, 0] } : { scale: [1, 1.05, 1] }}
+                  transition={isUnlocked ? { duration: 0.4 } : { repeat: Infinity, duration: 2 }}
                 >
-                  {p.id % 3 === 0
-                    ? <Heart size={p.size + 4} className="text-pink-400 fill-pink-300 drop-shadow-[0_0_6px_#f9a8d4]" />
-                    : p.id % 3 === 1
-                    ? <Stars size={p.size + 4} className="text-white fill-white drop-shadow-[0_0_6px_#fff]" />
-                    : <div style={{ width: p.size, height: p.size, borderRadius: '50%', background: 'radial-gradient(circle, #fbcfe8, #f472b6)', boxShadow: '0 0 8px #f9a8d4' }} />
-                  }
+                  <Key size={14} className="text-pink-500" />
                 </motion.div>
-              ))}
+              </motion.div>
 
-              {/* ── CHEST BODY + LID ── */}
-              <div className="relative" style={{ width: 200, height: 150, transformStyle: "preserve-3d" }}>
-                {/* ── LID ── */}
-                <motion.div
-                  className="absolute left-0 right-0 z-20"
-                  style={{
-                    bottom: 90,
-                    height: 80,
-                    transformOrigin: "bottom center",
-                    transformStyle: "preserve-3d",
-                    willChange: "transform",
-                    transform: "translate3d(0,0,0)"
-                  }}
-                  animate={isUnlocked ? { rotateX: -115 } : { rotateX: 0 }}
-                  transition={{ duration: 0.8, ease: "easeOut" }}
-                >
-                  {/* Lid top face */}
-                  <div
-                    className="absolute inset-0 rounded-t-2xl"
-                    style={{
-                      background: "linear-gradient(170deg, #fbcfe8 0%, #f9a8d4 40%, #ec4899 100%)",
-                      boxShadow: "0 -2px 10px rgba(236,72,153,0.15)",
-                      border: "2px solid #db2777",
-                      borderBottom: "none",
-                      backfaceVisibility: "hidden",
-                      WebkitBackfaceVisibility: "hidden"
-                    }}
-                  >
-                    <div className="absolute inset-x-4 top-2 h-3 rounded-full opacity-40" style={{ background: "linear-gradient(to right, transparent, white, transparent)" }} />
-                    <div className="absolute top-0 bottom-0 left-10 w-3 rounded" style={{ background: "rgba(219,39,119,0.3)" }} />
-                    <div className="absolute top-0 bottom-0 right-10 w-3 rounded" style={{ background: "rgba(219,39,119,0.3)" }} />
-                  </div>
+              {/* Inner glow when open */}
+              <motion.div
+                className="absolute left-1 right-1 rounded-b-xl z-10"
+                style={{ top: 55, bottom: 0, background: "linear-gradient(to bottom, #fff5fb, #fce7f3)" }}
+                animate={isUnlocked ? { opacity: 1 } : { opacity: 0 }}
+                transition={{ delay: 0.4 }}
+              />
 
-                  <motion.div
-                    className="absolute -bottom-5 left-1/2 z-30 flex items-center justify-center rounded-full border-4 border-white shadow-xl"
-                    style={{ width: 40, height: 40, marginLeft: -20, background: "linear-gradient(135deg, #fff, #fbcfe8)" }}
-                    animate={isUnlocked ? { rotate: [0, 20, -10, 0], scale: [1, 1.2, 0.9, 1] } : { scale: [1, 1.08, 1] }}
-                    transition={isUnlocked ? { duration: 0.6 } : { repeat: Infinity, duration: 2 }}
-                  >
-                    <Key size={18} className="text-pink-600" />
-                  </motion.div>
-                </motion.div>
+              {/* BODY */}
+              <div
+                className="absolute left-0 right-0 bottom-0 rounded-b-2xl z-10"
+                style={{
+                  top: 53,
+                  background: "linear-gradient(175deg, #f472b6, #ec4899, #db2777)",
+                  border: "2px solid #be185d",
+                  borderTop: "none",
+                }}
+              >
+                {/* Strips */}
+                <div className="absolute top-0 bottom-0 left-8 w-2.5 rounded opacity-30" style={{ background: "#be185d" }} />
+                <div className="absolute top-0 bottom-0 right-8 w-2.5 rounded opacity-30" style={{ background: "#be185d" }} />
+                {/* Studs */}
+                {[18, 70, 122].map(x => (
+                  <div key={x} className="absolute bottom-2 w-2.5 h-2.5 rounded-full" style={{ left: x, background: "linear-gradient(135deg,#fff,#fbcfe8)", border: "1px solid rgba(190,24,93,0.3)" }} />
+                ))}
+              </div>
 
-                {/* ── BODY ── */}
-                <div
-                  className="absolute bottom-0 left-0 right-0 rounded-b-2xl overflow-hidden"
-                  style={{
-                    height: 90,
-                    background: "linear-gradient(175deg, #f472b6 0%, #ec4899 50%, #db2777 100%)",
-                    border: "2px solid #be185d",
-                    boxShadow: "0 10px 30px -5px rgba(236,72,153,0.3)",
-                    transform: "translate3d(0,0,0)"
-                  }}
-                >
-                  <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(#fff 1px, transparent 1px)", backgroundSize: "14px 14px" }} />
-                  <div className="absolute top-0 bottom-0 left-10 w-3 rounded opacity-40" style={{ background: "#be185d" }} />
-                  <div className="absolute top-0 bottom-0 right-10 w-3 rounded opacity-40" style={{ background: "#be185d" }} />
-                </div>
+              {/* Ground shadow */}
+              <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 rounded-full" style={{ width: 140, height: 12, background: "radial-gradient(ellipse, rgba(219,39,119,0.3), transparent)", filter: "blur(4px)" }} />
+            </div>
 
-                {/* ── Ground shadow ── */}
-                <motion.div
-                  animate={{ scaleX: isUnlocked ? 1.3 : 1, opacity: isUnlocked ? 0.2 : 0.1 }}
-                  className="absolute -bottom-3 left-1/2 -translate-x-1/2 rounded-full pointer-events-none"
-                  style={{ width: 180, height: 16, background: "radial-gradient(ellipse, #db2777, transparent)", filter: "blur(6px)" }}
-                />
+            {/* Unlock Button */}
+            <motion.button
+              whileHover={canUnlock && !isUnlocked ? { scale: 1.04 } : {}}
+              whileTap={canUnlock && !isUnlocked ? { scale: 0.96 } : {}}
+              onClick={handleUnlock}
+              disabled={isUnlocked || !canUnlock}
+              className={`px-10 py-4 rounded-full font-black uppercase tracking-[0.18em] text-sm flex items-center gap-3 transition-all ${
+                isUnlocked || !canUnlock
+                  ? "bg-pink-50 text-pink-200 cursor-not-allowed"
+                  : "bg-pink-500 text-white shadow-lg hover:bg-pink-600"
+              }`}
+            >
+              {!canUnlock
+                ? <><Key size={18} /> Kunci Belum Lengkap</>
+                : isUnlocked
+                ? "Membuka... 🌸"
+                : <><Unlock size={18} /> Gunakan Kunci Pink</>
+              }
+            </motion.button>
+          </div>
+        ) : (
+          /* ── LETTER ── */
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="w-full flex flex-col"
+            style={{ maxHeight: "92vh" }}
+          >
+            {/* Letter header */}
+            <div className="bg-gradient-to-br from-pink-500 to-pink-700 px-6 py-8 flex flex-col items-center text-white flex-shrink-0">
+              <motion.div
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ repeat: Infinity, duration: 2.5 }}
+              >
+                <Heart size={40} className="fill-white mb-3" />
+              </motion.div>
+              <p className="text-[10px] uppercase tracking-[0.4em] opacity-70 mb-1">Surat Spesial</p>
+              <h3 className="text-2xl font-black">Untuk Kamu 🌸</h3>
+            </div>
+
+            {/* Letter body — scrollable */}
+            <div className="flex-1 overflow-y-auto px-6 py-6 text-left space-y-5 text-pink-900" style={{ fontSize: "15px", lineHeight: "1.75" }}>
+              <p className="text-xl font-black italic text-pink-600 border-b border-pink-100 pb-4">
+                Teruntuk kamu,
+              </p>
+
+              <p>
+                Selamat! Kamu sudah berhasil mengumpulkan semua kepingan kunci dan membuka peti rahasia ini. Tapi tahukah kamu? Harta karun yang paling berharga sebenarnya bukanlah kado-kado ini...
+              </p>
+
+              <div className="bg-pink-50 rounded-2xl p-5 border-l-4 border-pink-400 italic text-pink-700">
+                "Harta yang paling indah adalah setiap detik kebersamaan, setiap tawa yang kita bagi, dan keberadaanmu yang selalu mencerahkan duniaku."
+              </div>
+
+              <p>
+                Terima kasih sudah menjadi versi terbaik dari dirimu sendiri. Di hari ulang tahunmu ini, aku berharap kamu mendapatkan kebahagiaan yang tak terbatas, kesehatan yang selalu terjaga, dan cinta yang tak pernah padam.
+              </p>
+
+              <div className="text-right pt-4 border-t border-pink-100">
+                <p className="text-pink-400 text-xs uppercase tracking-widest mb-1">Salam Hangat,</p>
+                <p className="text-2xl font-black text-pink-600">David Adesta</p>
               </div>
             </div>
 
-            <motion.button
-              whileHover={canUnlock ? { scale: 1.05, y: -2 } : {}}
-              whileTap={canUnlock ? { scale: 0.98 } : {}}
-              onClick={handleUnlock}
-              disabled={isUnlocked || !canUnlock}
-              className={`group px-16 py-5 rounded-full font-black uppercase tracking-[0.2em] text-sm flex items-center gap-4 shadow-[0_20px_40px_-10px_rgba(233,30,140,0.2)] transition-all border-b-4 relative overflow-hidden ${isUnlocked || !canUnlock ? "bg-pink-50 text-pink-200 border-pink-100 cursor-not-allowed" : "bg-pink-600 text-white border-pink-800 hover:bg-pink-700"}`}
-            >
-              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-              {!canUnlock ? <><Key size={20} /> Kunci Belum Lengkap</> : (isUnlocked ? "Membuka..." : <><Unlock size={20} /> Gunakan Kunci Pink</>)}
-            </motion.button>
-          </>
-        ) : (
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95, y: 30 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            className="w-[92%] max-w-lg bg-white p-6 md:p-14 rounded-[2.5rem] shadow-[0_40px_120px_rgba(233,30,140,0.15)] border-[8px] border-pink-50 relative overflow-hidden"
-            style={{ maxHeight: "82vh" }}
-          >
-            {/* Background Texture */}
-            <div className="absolute inset-0 opacity-[0.04] pointer-events-none" style={{ backgroundImage: "radial-gradient(#000 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
-            
-            {/* Wax Seal (Floating) */}
-            <motion.div 
-              animate={{ y: [0, -4, 0] }}
-              transition={{ repeat: Infinity, duration: 4 }}
-              className="absolute -top-5 left-1/2 -translate-x-1/2 w-16 h-16 bg-pink-600 rounded-full shadow-lg flex items-center justify-center border-4 border-white z-10"
-            >
-               <Heart size={28} className="text-white fill-white" />
-            </motion.div>
-
-            {/* Letter Content */}
-            <div 
-               className="text-pink-900 text-left space-y-6 leading-relaxed overflow-y-auto max-h-[55vh] pr-2 custom-scrollbar"
-               style={{ fontSize: '15px' }}
-            >
-               <motion.p 
-                 initial={{ opacity: 0, y: 10 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 transition={{ delay: 0.2 }}
-                 className="text-xl font-black italic mb-6 border-b-2 border-pink-50 pb-3 inline-block text-pink-600 tracking-tight"
-               >
-                 Teruntuk kamu,
-               </motion.p>
-               
-               <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}>
-                 Selamat! Kamu sudah berhasil mengumpulkan semua kepingan kunci dan membuka peti rahasia ini. Tapi tahukah kamu? Harta karun yang paling berharga sebenarnya bukanlah kado-kado ini...
-               </motion.p>
-
-               <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }} className="bg-pink-50/50 p-5 rounded-2xl border-l-4 border-pink-400 italic text-pink-700 text-sm">
-                 "Harta yang paling indah adalah setiap detik kebersamaan, setiap tawa yang kita bagi, dan keberadaanmu yang selalu mencerahkan duniaku."
-               </motion.p>
-
-               <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }}>
-                 Terima kasih sudah menjadi versi terbaik dari dirimu sendiri. Di hari ulang tahunmu ini, aku berharap kamu mendapatkan kebahagiaan yang tak terbatas, kesehatan yang selalu terjaga, dan cinta yang tak pernah padam.
-               </motion.p>
-
-               <motion.div 
-                 initial={{ opacity: 0, y: 20 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 transition={{ delay: 1.5 }}
-                 className="text-right font-black italic mt-12 pt-8 border-t-2 border-pink-50"
-               >
-                 <p className="text-pink-400 text-sm uppercase tracking-widest mb-2">Salam Hangat,</p>
-                 <p className="text-4xl text-pink-600 font-black">David Adesta</p>
-               </motion.div>
+            {/* Close button */}
+            <div className="flex-shrink-0 px-6 pb-6 pt-2">
+              <button
+                onClick={onClose}
+                className="w-full py-3 rounded-full border-2 border-pink-200 text-pink-500 font-black text-xs uppercase tracking-[0.4em] hover:bg-pink-50 transition-colors"
+              >
+                Simpan di Hati 🌸
+              </button>
             </div>
-            
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={onClose}
-              className="mt-12 text-pink-500 font-black uppercase text-[11px] tracking-[0.5em] hover:text-pink-800 transition-colors px-8 py-3 rounded-full border border-pink-100 hover:bg-pink-50"
-            >
-              Simpan di Hati 🌸
-            </motion.button>
           </motion.div>
         )}
       </motion.div>
