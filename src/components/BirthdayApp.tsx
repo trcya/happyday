@@ -1455,24 +1455,24 @@ function FinalGiftModal({ onClose, canUnlock }: { onClose: () => void; canUnlock
 
             {/* ═══ REALISTIC CHEST SCENE ═══ */}
             <div
-              className="relative flex items-end justify-center mb-10"
-              style={{ width: 280, height: 240, perspective: "900px", perspectiveOrigin: "50% 70%" }}
+              className="relative flex items-end justify-center mb-8"
+              style={{ width: 240, height: 200, perspective: "1000px" }}
             >
-              {/* ── Light Rays: Simplified for Android ── */}
+              {/* ── Light Rays: Optimized ── */}
               {isUnlocked && (
-                <div className="absolute inset-0 pointer-events-none z-40 flex items-center justify-center" style={{ top: '20%' }}>
-                  {[...Array(6)].map((_, i) => (
+                <div className="absolute inset-0 pointer-events-none z-40 flex items-center justify-center overflow-hidden" style={{ top: '20%' }}>
+                  {[...Array(5)].map((_, i) => (
                     <motion.div
                       key={i}
                       initial={{ scaleY: 0, opacity: 0 }}
-                      animate={{ scaleY: 1, opacity: [0, 0.5, 0] }}
-                      transition={{ duration: 2, delay: 0.3 + i * 0.1, ease: "linear", repeat: Infinity, repeatDelay: 2 }}
+                      animate={{ scaleY: 1, opacity: [0, 0.4, 0] }}
+                      transition={{ duration: 2.5, delay: 0.3 + i * 0.2, ease: "linear", repeat: Infinity, repeatDelay: 1.5 }}
                       className="absolute origin-bottom"
                       style={{
                         width: 4,
-                        height: 100 + i * 8,
-                        background: `linear-gradient(to top, rgba(255,182,213,0.7), transparent)`,
-                        transform: `rotate(${-60 + i * 24}deg)`,
+                        height: 120,
+                        background: `linear-gradient(to top, rgba(255,182,213,0.6), transparent)`,
+                        transform: `rotate(${-60 + i * 30}deg) translateZ(0)`,
                         bottom: 0,
                         borderRadius: 4,
                         willChange: "transform, opacity"
@@ -1524,21 +1524,22 @@ function FinalGiftModal({ onClose, canUnlock }: { onClose: () => void; canUnlock
                 <motion.div
                   className="absolute left-0 right-0 z-20"
                   style={{
-                    bottom: 100,  // sits on top of body
+                    bottom: 100,
                     height: 90,
                     transformOrigin: "bottom center",
                     transformStyle: "preserve-3d",
+                    willChange: "transform",
+                    transform: "translate3d(0,0,0)"
                   }}
                   animate={isUnlocked ? {
-                    rotateX: -148,
-                    translateY: -10,
+                    rotateX: -140,
                   } : {
                     rotateX: 0,
                   }}
                   transition={{
                     type: "spring",
-                    stiffness: 55,
-                    damping: 10,
+                    stiffness: 90,
+                    damping: 18,
                     delay: isUnlocked ? 0.3 : 0,
                   }}
                 >
@@ -1575,10 +1576,11 @@ function FinalGiftModal({ onClose, canUnlock }: { onClose: () => void; canUnlock
                 <div
                   className="absolute bottom-0 left-0 right-0 rounded-b-2xl overflow-hidden"
                   style={{
-                    height: 120,
+                    height: 100,
                     background: "linear-gradient(175deg, #f472b6 0%, #ec4899 50%, #db2777 100%)",
-                    border: "3px solid #be185d",
-                    boxShadow: "0 20px 60px -10px rgba(236,72,153,0.45), inset 0 2px 0 rgba(255,255,255,0.3)",
+                    border: "2px solid #be185d",
+                    boxShadow: "0 15px 40px -10px rgba(236,72,153,0.35)",
+                    transform: "translate3d(0,0,0)"
                   }}
                 >
                   {/* Body texture dots */}
@@ -1616,29 +1618,33 @@ function FinalGiftModal({ onClose, canUnlock }: { onClose: () => void; canUnlock
           </>
         ) : (
           <motion.div 
-            initial={{ opacity: 0, scale: 0.8, y: 100 }}
+            initial={{ opacity: 0, scale: 0.9, y: 50 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            className="w-full max-w-md bg-white p-8 md:p-14 rounded-3xl shadow-[0_30px_100px_rgba(233,30,140,0.15)] border-4 border-pink-50 relative"
+            className="w-full max-w-sm bg-white p-6 md:p-12 rounded-[2.5rem] shadow-[0_40px_100px_rgba(233,30,140,0.12)] border-[6px] border-pink-50 relative overflow-hidden"
+            style={{ maxHeight: "85vh" }}
           >
+            {/* Background Texture */}
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: "radial-gradient(#000 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
+            
             {/* Wax Seal (Floating) */}
             <motion.div 
-              animate={{ y: [0, -5, 0], rotate: [-2, 2, -2] }}
-              transition={{ repeat: Infinity, duration: 3 }}
-              className="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-pink-600 rounded-full shadow-2xl flex items-center justify-center border-4 border-white z-10"
+              animate={{ y: [0, -4, 0] }}
+              transition={{ repeat: Infinity, duration: 4 }}
+              className="absolute -top-6 left-1/2 -translate-x-1/2 w-16 h-16 bg-pink-600 rounded-full shadow-xl flex items-center justify-center border-4 border-white z-10"
             >
-               <Heart size={36} className="text-white fill-white drop-shadow-md" />
+               <Heart size={28} className="text-white fill-white" />
             </motion.div>
 
             {/* Letter Content */}
             <div 
-               className="text-pink-900 text-left space-y-8 leading-relaxed overflow-y-auto max-h-[60vh] pr-4 custom-scrollbar"
-               style={{ fontSize: '17px' }}
+               className="text-pink-900 text-left space-y-6 leading-relaxed overflow-y-auto max-h-[55vh] pr-2 custom-scrollbar"
+               style={{ fontSize: '15px' }}
             >
                <motion.p 
-                 initial={{ opacity: 0, x: -20 }}
-                 animate={{ opacity: 1, x: 0 }}
-                 transition={{ delay: 0.3 }}
-                 className="text-2xl font-black italic mb-8 border-b-2 border-pink-100 pb-4 inline-block text-pink-600"
+                 initial={{ opacity: 0, y: 10 }}
+                 animate={{ opacity: 1, y: 0 }}
+                 transition={{ delay: 0.2 }}
+                 className="text-xl font-black italic mb-6 border-b-2 border-pink-50 pb-3 inline-block text-pink-600 tracking-tight"
                >
                  Teruntuk kamu,
                </motion.p>
@@ -1647,7 +1653,7 @@ function FinalGiftModal({ onClose, canUnlock }: { onClose: () => void; canUnlock
                  Selamat! Kamu sudah berhasil mengumpulkan semua kepingan kunci dan membuka peti rahasia ini. Tapi tahukah kamu? Harta karun yang paling berharga sebenarnya bukanlah kado-kado ini...
                </motion.p>
 
-               <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }} className="bg-pink-50 p-6 rounded-2xl border-l-4 border-pink-400 italic text-pink-700">
+               <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }} className="bg-pink-50/50 p-5 rounded-2xl border-l-4 border-pink-400 italic text-pink-700 text-sm">
                  "Harta yang paling indah adalah setiap detik kebersamaan, setiap tawa yang kita bagi, dan keberadaanmu yang selalu mencerahkan duniaku."
                </motion.p>
 
