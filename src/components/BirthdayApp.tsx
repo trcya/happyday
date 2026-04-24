@@ -1458,23 +1458,22 @@ function FinalGiftModal({ onClose, canUnlock }: { onClose: () => void; canUnlock
               className="relative flex items-end justify-center mb-8"
               style={{ width: 240, height: 200, perspective: "1000px" }}
             >
-              {/* ── Light Rays: Optimized ── */}
+              {/* ── Light Rays: Ultra-Optimized ── */}
               {isUnlocked && (
-                <div className="absolute inset-0 pointer-events-none z-40 flex items-center justify-center overflow-hidden" style={{ top: '20%' }}>
-                  {[...Array(5)].map((_, i) => (
+                <div className="absolute inset-0 pointer-events-none z-40 flex items-center justify-center overflow-hidden" style={{ top: '25%' }}>
+                  {[...Array(4)].map((_, i) => (
                     <motion.div
                       key={i}
                       initial={{ scaleY: 0, opacity: 0 }}
-                      animate={{ scaleY: 1, opacity: [0, 0.4, 0] }}
-                      transition={{ duration: 2.5, delay: 0.3 + i * 0.2, ease: "linear", repeat: Infinity, repeatDelay: 1.5 }}
+                      animate={{ scaleY: 1, opacity: [0, 0.35, 0] }}
+                      transition={{ duration: 3, delay: 0.4 + i * 0.3, ease: "linear", repeat: Infinity, repeatDelay: 1 }}
                       className="absolute origin-bottom"
                       style={{
-                        width: 4,
-                        height: 120,
-                        background: `linear-gradient(to top, rgba(255,182,213,0.6), transparent)`,
-                        transform: `rotate(${-60 + i * 30}deg) translateZ(0)`,
+                        width: 3,
+                        height: 110,
+                        background: `linear-gradient(to top, rgba(255,182,213,0.5), transparent)`,
+                        transform: `rotate(${-45 + i * 30}deg) translateZ(0)`,
                         bottom: 0,
-                        borderRadius: 4,
                         willChange: "transform, opacity"
                       }}
                     />
@@ -1501,67 +1500,39 @@ function FinalGiftModal({ onClose, canUnlock }: { onClose: () => void; canUnlock
                 </motion.div>
               ))}
 
-              {/* ── CHEST BODY + LID (3D) ── */}
-              <div className="relative" style={{ width: 220, height: 160, transformStyle: "preserve-3d" }}>
-
-                {/* Inner glow inside chest (visible when open) */}
-                {isUnlocked && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: [0, 1, 0.8, 1] }}
-                    transition={{ repeat: Infinity, duration: 2.5, delay: 0.5 }}
-                    className="absolute z-10 rounded-xl overflow-hidden pointer-events-none"
-                    style={{ bottom: 0, left: 6, right: 6, height: 120 }}
-                  >
-                    <div className="w-full h-full" style={{
-                      background: "radial-gradient(ellipse at 50% 80%, #fff 0%, #fce7f3 40%, transparent 80%)",
-                      filter: "blur(4px)"
-                    }} />
-                  </motion.div>
-                )}
-
+              {/* ── CHEST BODY + LID ── */}
+              <div className="relative" style={{ width: 200, height: 150, transformStyle: "preserve-3d" }}>
                 {/* ── LID ── */}
                 <motion.div
                   className="absolute left-0 right-0 z-20"
                   style={{
-                    bottom: 100,
-                    height: 90,
+                    bottom: 90,
+                    height: 80,
                     transformOrigin: "bottom center",
                     transformStyle: "preserve-3d",
                     willChange: "transform",
                     transform: "translate3d(0,0,0)"
                   }}
-                  animate={isUnlocked ? {
-                    rotateX: -140,
-                  } : {
-                    rotateX: 0,
-                  }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 90,
-                    damping: 18,
-                    delay: isUnlocked ? 0.3 : 0,
-                  }}
+                  animate={isUnlocked ? { rotateX: -115 } : { rotateX: 0 }}
+                  transition={{ duration: 0.8, ease: "easeOut" }}
                 >
                   {/* Lid top face */}
                   <div
                     className="absolute inset-0 rounded-t-2xl"
                     style={{
                       background: "linear-gradient(170deg, #fbcfe8 0%, #f9a8d4 40%, #ec4899 100%)",
-                      boxShadow: "0 -4px 15px rgba(236,72,153,0.2)",
+                      boxShadow: "0 -2px 10px rgba(236,72,153,0.15)",
                       border: "2px solid #db2777",
                       borderBottom: "none",
-                      willChange: "transform"
+                      backfaceVisibility: "hidden",
+                      WebkitBackfaceVisibility: "hidden"
                     }}
                   >
-                    {/* Lid highlights */}
                     <div className="absolute inset-x-4 top-2 h-3 rounded-full opacity-40" style={{ background: "linear-gradient(to right, transparent, white, transparent)" }} />
-                    {/* Lid straps */}
                     <div className="absolute top-0 bottom-0 left-10 w-3 rounded" style={{ background: "rgba(219,39,119,0.3)" }} />
                     <div className="absolute top-0 bottom-0 right-10 w-3 rounded" style={{ background: "rgba(219,39,119,0.3)" }} />
                   </div>
 
-                  {/* Lock badge */}
                   <motion.div
                     className="absolute -bottom-5 left-1/2 z-30 flex items-center justify-center rounded-full border-4 border-white shadow-xl"
                     style={{ width: 40, height: 40, marginLeft: -20, background: "linear-gradient(135deg, #fff, #fbcfe8)" }}
@@ -1576,31 +1547,23 @@ function FinalGiftModal({ onClose, canUnlock }: { onClose: () => void; canUnlock
                 <div
                   className="absolute bottom-0 left-0 right-0 rounded-b-2xl overflow-hidden"
                   style={{
-                    height: 100,
+                    height: 90,
                     background: "linear-gradient(175deg, #f472b6 0%, #ec4899 50%, #db2777 100%)",
                     border: "2px solid #be185d",
-                    boxShadow: "0 15px 40px -10px rgba(236,72,153,0.35)",
+                    boxShadow: "0 10px 30px -5px rgba(236,72,153,0.3)",
                     transform: "translate3d(0,0,0)"
                   }}
                 >
-                  {/* Body texture dots */}
                   <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(#fff 1px, transparent 1px)", backgroundSize: "14px 14px" }} />
-                  {/* Body sheen */}
-                  <div className="absolute inset-x-0 top-0 h-6 opacity-25" style={{ background: "linear-gradient(to bottom, white, transparent)" }} />
-                  {/* Body straps */}
                   <div className="absolute top-0 bottom-0 left-10 w-3 rounded opacity-40" style={{ background: "#be185d" }} />
                   <div className="absolute top-0 bottom-0 right-10 w-3 rounded opacity-40" style={{ background: "#be185d" }} />
-                  {/* Bottom studs */}
-                  {[20, 100, 180].map(x => (
-                    <div key={x} className="absolute bottom-3 w-3 h-3 rounded-full border-2 border-pink-900/30" style={{ left: x, background: "linear-gradient(135deg,#fff,#fbcfe8)" }} />
-                  ))}
                 </div>
 
                 {/* ── Ground shadow ── */}
                 <motion.div
-                  animate={{ scaleX: isUnlocked ? 1.3 : 1, opacity: isUnlocked ? 0.2 : 0.12 }}
-                  className="absolute -bottom-4 left-1/2 -translate-x-1/2 rounded-full pointer-events-none"
-                  style={{ width: 220, height: 24, background: "radial-gradient(ellipse, #db2777, transparent)", filter: "blur(8px)" }}
+                  animate={{ scaleX: isUnlocked ? 1.3 : 1, opacity: isUnlocked ? 0.2 : 0.1 }}
+                  className="absolute -bottom-3 left-1/2 -translate-x-1/2 rounded-full pointer-events-none"
+                  style={{ width: 180, height: 16, background: "radial-gradient(ellipse, #db2777, transparent)", filter: "blur(6px)" }}
                 />
               </div>
             </div>
@@ -1618,19 +1581,19 @@ function FinalGiftModal({ onClose, canUnlock }: { onClose: () => void; canUnlock
           </>
         ) : (
           <motion.div 
-            initial={{ opacity: 0, scale: 0.9, y: 50 }}
+            initial={{ opacity: 0, scale: 0.95, y: 30 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            className="w-full max-w-sm bg-white p-6 md:p-12 rounded-[2.5rem] shadow-[0_40px_100px_rgba(233,30,140,0.12)] border-[6px] border-pink-50 relative overflow-hidden"
-            style={{ maxHeight: "85vh" }}
+            className="w-[92%] max-w-lg bg-white p-6 md:p-14 rounded-[2.5rem] shadow-[0_40px_120px_rgba(233,30,140,0.15)] border-[8px] border-pink-50 relative overflow-hidden"
+            style={{ maxHeight: "82vh" }}
           >
             {/* Background Texture */}
-            <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: "radial-gradient(#000 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
+            <div className="absolute inset-0 opacity-[0.04] pointer-events-none" style={{ backgroundImage: "radial-gradient(#000 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
             
             {/* Wax Seal (Floating) */}
             <motion.div 
               animate={{ y: [0, -4, 0] }}
               transition={{ repeat: Infinity, duration: 4 }}
-              className="absolute -top-6 left-1/2 -translate-x-1/2 w-16 h-16 bg-pink-600 rounded-full shadow-xl flex items-center justify-center border-4 border-white z-10"
+              className="absolute -top-5 left-1/2 -translate-x-1/2 w-16 h-16 bg-pink-600 rounded-full shadow-lg flex items-center justify-center border-4 border-white z-10"
             >
                <Heart size={28} className="text-white fill-white" />
             </motion.div>
