@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Stars, ChevronRight, ChevronLeft, Paperclip, Key, Gift, Unlock } from "lucide-react";
 
-// Steps: 0 = Landing, 1 = Greeting, 2 = Gallery, 3 = Wishes, 4 = Credits
+// Steps: 0 = Landing, 1 = Greeting, 2 = Gallery, 3 = Wishes, 4 = Credits, 5 = Surprise
 
 // ─── Global Sound Utilities ────────────────────────────────────────────────
 function playSound(url: string, volume = 0.4) {
@@ -14,6 +14,31 @@ function playSound(url: string, volume = 0.4) {
     audio.volume = volume;
     audio.play().catch(() => {});
   } catch {}
+}
+
+function KeyPiece({ id, size = 24, className = "", isInventory = false }: { id: number, size?: number, className?: string, isInventory?: boolean }) {
+  // Fragments of a key
+  return (
+    <motion.svg 
+      width={size} 
+      height={size} 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth={isInventory ? "2" : "3"} 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      className={className}
+      initial={isInventory ? {} : { rotate: 0 }}
+      animate={isInventory ? {} : { rotate: [0, 10, -10, 0] }}
+      transition={{ repeat: Infinity, duration: 3 }}
+    >
+      {id === 1 && <path d="M12 2C8 2 5 5 5 9c0 2 1 4 3 5.5V17" />} {/* Left Top */}
+      {id === 2 && <path d="M12 2c4 0 7 3 7 7 0 2-1 4-3 5.5V17" />} {/* Right Top */}
+      {id === 3 && <path d="M9 17h6v2H9zM12 17v4" />} {/* Stem/Middle */}
+      {id === 4 && <path d="M10 21h4v2h-4zM12 21v2" />} {/* Teeth/End */}
+    </motion.svg>
+  );
 }
 
 export default function BirthdayApp() {
@@ -45,6 +70,11 @@ export default function BirthdayApp() {
     setStep((s) => s + 1);
   };
 
+  const prevStep = () => {
+    playSound("https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3", 0.2);
+    setStep((s) => Math.max(0, s - 1));
+  };
+
   const collectPiece = (id: number) => {
     if (collectedPieces.includes(id)) return;
     playSound("https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3", 0.4);
@@ -68,19 +98,14 @@ export default function BirthdayApp() {
 
       <AnimatePresence mode="wait">
         {step === 0 && <Landing key="landing" onNext={nextStep} onCollect={() => collectPiece(1)} collected={collectedPieces.includes(1)} />}
-        {step === 1 && <Greeting key="greeting" onNext={nextStep} onCollect={() => collectPiece(2)} collected={collectedPieces.includes(2)} />}
-        {step === 2 && <Gallery key="gallery" onNext={nextStep} onCollect={() => collectPiece(3)} collected={collectedPieces.includes(3)} />}
-        {step === 3 && <Wishes key="wishes" onNext={nextStep} onCollect={() => collectPiece(4)} collected={collectedPieces.includes(4)} />}
-        {step === 4 && <Credits key="credits" onOpenGift={() => setShowFinalGift(true)} keyReady={keyReconstructed} />}
+        {step === 1 && <Greeting key="greeting" onNext={nextStep} onPrev={prevStep} onCollect={() => collectPiece(2)} collected={collectedPieces.includes(2)} />}
+        {step === 2 && <Gallery key="gallery" onNext={nextStep} onPrev={prevStep} onCollect={() => collectPiece(3)} collected={collectedPieces.includes(3)} />}
+        {step === 3 && <Wishes key="wishes" onNext={nextStep} onPrev={prevStep} onCollect={() => collectPiece(4)} collected={collectedPieces.includes(4)} />}
+        {step === 4 && <Credits key="credits" onNext={nextStep} onPrev={prevStep} keyReady={keyReconstructed} />}
+        {step === 5 && <SurpriseFinale key="surprise" onPrev={prevStep} keyReady={keyReconstructed} />}
       </AnimatePresence>
 
       <KeyInventory collectedCount={collectedPieces.length} total={4} reconstructed={keyReconstructed} />
-      
-      <AnimatePresence>
-        {showFinalGift && (
-          <FinalGiftModal onClose={() => setShowFinalGift(false)} canUnlock={keyReconstructed} />
-        )}
-      </AnimatePresence>
     </div>
   );
 }
@@ -385,14 +410,18 @@ function Landing({ onNext, onCollect, collected }: { onNext: () => void; onColle
         {/* Hidden Key Piece 1 */}
         {!collected && (
           <motion.div
-            className="absolute bottom-10 left-10 z-50 cursor-pointer"
+            className="absolute bottom-12 left-12 z-50 cursor-pointer p-4"
             initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 0.4, scale: 1, rotate: [0, 15, -15, 0] }}
-            whileHover={{ opacity: 1, scale: 1.2, filter: "drop-shadow(0 0 10px #f06292)" }}
-            transition={{ rotate: { repeat: Infinity, duration: 4 } }}
+            animate={{ 
+              opacity: [0.6, 1, 0.6], 
+              scale: [1, 1.3, 1],
+            }}
+            whileHover={{ scale: 1.5, filter: "drop-shadow(0 0 20px #f06292)" }}
+            transition={{ repeat: Infinity, duration: 2.5 }}
             onClick={(e) => { e.stopPropagation(); onCollect(); }}
           >
-            <Key size={24} className="text-pink-300" />
+            <KeyPiece id={1} size={32} className="text-pink-400" />
+            <div className="absolute inset-0 bg-pink-200/20 blur-xl rounded-full -z-10 animate-pulse" />
           </motion.div>
         )}
       </div>
@@ -400,7 +429,7 @@ function Landing({ onNext, onCollect, collected }: { onNext: () => void; onColle
   );
 }
 
-function Greeting({ onNext, onCollect, collected }: { onNext: () => void; onCollect: () => void; collected: boolean }) {
+function Greeting({ onNext, onPrev, onCollect, collected }: { onNext: () => void; onPrev: () => void; onCollect: () => void; collected: boolean }) {
   const [isOpened, setIsOpened] = useState(false);
   const [showCake, setShowCake] = useState(false);
   const [isCandleOut, setIsCandleOut] = useState(false);
@@ -650,13 +679,18 @@ function Greeting({ onNext, onCollect, collected }: { onNext: () => void; onColl
         {/* Hidden Key Piece 2 */}
         {!collected && showCake && (
           <motion.div
-            className="absolute -bottom-4 -right-10 z-50 cursor-pointer"
+            className="absolute -bottom-6 -right-12 z-50 cursor-pointer p-4"
             initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 0.5, scale: 1 }}
-            whileHover={{ opacity: 1, scale: 1.2, filter: "drop-shadow(0 0 10px #f06292)" }}
+            animate={{ 
+              opacity: [0.6, 1, 0.6],
+              scale: [1, 1.3, 1]
+            }}
+            transition={{ repeat: Infinity, duration: 2.5 }}
+            whileHover={{ scale: 1.5, filter: "drop-shadow(0 0 20px #f06292)" }}
             onClick={(e) => { e.stopPropagation(); onCollect(); }}
           >
-            <Key size={20} className="text-pink-200" />
+            <KeyPiece id={2} size={32} className="text-pink-300" />
+            <div className="absolute inset-0 bg-pink-100/30 blur-xl rounded-full -z-10" />
           </motion.div>
         )}
       </div>
@@ -667,7 +701,7 @@ function Greeting({ onNext, onCollect, collected }: { onNext: () => void; onColl
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="z-50"
+            className="z-50 flex flex-col items-center gap-4"
           >
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -684,6 +718,13 @@ function Greeting({ onNext, onCollect, collected }: { onNext: () => void; onColl
                 See My Memories <ChevronRight />
               </span>
             </motion.button>
+
+            <button 
+              onClick={onPrev}
+              className="text-pink-400 font-bold uppercase text-[10px] tracking-widest hover:text-pink-600 transition-colors"
+            >
+              ← Back
+            </button>
           </motion.div>
         )}
       </AnimatePresence>
@@ -691,7 +732,7 @@ function Greeting({ onNext, onCollect, collected }: { onNext: () => void; onColl
   );
 }
 
-function Gallery({ onNext, onCollect, collected }: { onNext: () => void; onCollect: () => void; collected: boolean }) {
+function Gallery({ onNext, onPrev, onCollect, collected }: { onNext: () => void; onPrev: () => void; onCollect: () => void; collected: boolean }) {
   const [index, setIndex] = useState(0);
   const images = [
     { src: "https://images.unsplash.com/photo-1582206684807-fcf870f2f359?q=80&w=800&auto=format&fit=crop", caption: "Our first adventure! 🐱✨" },
@@ -794,11 +835,17 @@ function Gallery({ onNext, onCollect, collected }: { onNext: () => void; onColle
         {/* Hidden Key Piece 3 */}
         {!collected && (
           <motion.div
-            className="absolute top-2 right-2 z-50 cursor-pointer opacity-30"
-            whileHover={{ opacity: 1, scale: 1.2 }}
+            className="absolute top-0 right-0 z-50 cursor-pointer p-4"
+            animate={{ 
+              opacity: [0.6, 1, 0.6],
+              scale: [1, 1.3, 1]
+            }}
+            transition={{ repeat: Infinity, duration: 3 }}
+            whileHover={{ scale: 1.5, filter: "drop-shadow(0 0 20px #f06292)" }}
             onClick={(e) => { e.stopPropagation(); onCollect(); }}
           >
-            <Key size={16} className="text-pink-300" />
+            <KeyPiece id={3} size={32} className="text-pink-400" />
+            <div className="absolute inset-0 bg-pink-100/20 blur-xl rounded-full -z-10" />
           </motion.div>
         )}
       </div>
@@ -817,11 +864,18 @@ function Gallery({ onNext, onCollect, collected }: { onNext: () => void; onColle
       >
         <span className="flex items-center gap-2">Next Surprise <Heart className="w-4 h-4" style={{ fill: "white" }} /></span>
       </motion.button>
+
+      <button 
+        onClick={onPrev}
+        className="mt-6 text-pink-400 font-bold uppercase text-[10px] tracking-widest hover:text-pink-600 transition-colors z-20"
+      >
+        ← Back
+      </button>
     </motion.div>
   );
 }
 
-function Wishes({ onNext, onCollect, collected }: { onNext: () => void; onCollect: () => void; collected: boolean }) {
+function Wishes({ onNext, onPrev, onCollect, collected }: { onNext: () => void; onPrev: () => void; onCollect: () => void; collected: boolean }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const messages = [
     { 
@@ -1005,11 +1059,17 @@ function Wishes({ onNext, onCollect, collected }: { onNext: () => void; onCollec
                 {/* Hidden Key Piece 4 - Only on the 3rd note */}
                 {!collected && index === 2 && (
                    <motion.div
-                    className="absolute top-1/2 right-4 z-50 cursor-pointer opacity-40"
-                    whileHover={{ opacity: 1, scale: 1.2 }}
+                    className="absolute -bottom-4 -right-4 z-50 cursor-pointer p-6"
+                    animate={{ 
+                      opacity: [0.6, 1, 0.6],
+                      scale: [1, 1.3, 1]
+                    }}
+                    transition={{ repeat: Infinity, duration: 2 }}
+                    whileHover={{ scale: 1.5, filter: "drop-shadow(0 0 20px #f06292)" }}
                     onClick={(e) => { e.stopPropagation(); onCollect(); }}
                   >
-                    <Key size={18} className="text-pink-400" />
+                    <KeyPiece id={4} size={32} className="text-pink-500" />
+                    <div className="absolute inset-0 bg-pink-200/30 blur-xl rounded-full -z-10" />
                   </motion.div>
                 )}
               </motion.div>
@@ -1018,41 +1078,43 @@ function Wishes({ onNext, onCollect, collected }: { onNext: () => void; onCollec
         </AnimatePresence>
       </div>
 
-      {/* Tap hint */}
+      {/* Tap hint: Moved lower and made cleaner */}
       <motion.div
         animate={{ opacity: [0.4, 1, 0.4] }}
         transition={{ repeat: Infinity, duration: 2 }}
-        className="mt-4 flex flex-col items-center gap-2 z-10 pb-8"
+        className="mt-12 flex flex-col items-center gap-3 z-10 pb-6"
       >
-        <p className="text-[10px] font-black uppercase tracking-[0.4em]" style={{ color: "#f06292", opacity: 0.5 }}>
-          {currentIndex < messages.length - 1 ? "Tap card to continue" : "Tap for final surprise 🎁"}
-        </p>
-        <div className="flex gap-1.5">
+        <div className="px-4 py-1.5 rounded-full bg-white/50 backdrop-blur-sm border border-pink-100">
+          <p className="text-[10px] font-black uppercase tracking-[0.4em]" style={{ color: "#f06292", opacity: 0.7 }}>
+            {currentIndex < messages.length - 1 ? "Tap card to continue" : "Tap for final surprise 🎁"}
+          </p>
+        </div>
+        <div className="flex gap-2">
           {[0,1,2].map(i => (
-            <motion.div key={i} animate={{ scale: [1,1.5,1], opacity: [0.3,1,0.3] }} transition={{ repeat: Infinity, duration: 1.4, delay: i*0.25 }} className="w-1.5 h-1.5 rounded-full" style={{ background: "#f48fb1" }} />
+            <motion.div key={i} animate={{ scale: [1,1.5,1], opacity: [0.3,1,0.3] }} transition={{ repeat: Infinity, duration: 1.4, delay: i*0.25 }} className="w-2 h-2 rounded-full" style={{ background: "#f48fb1" }} />
           ))}
         </div>
       </motion.div>
+
+      <button 
+        onClick={onPrev}
+        className="mb-8 text-pink-400 font-bold uppercase text-[10px] tracking-widest hover:text-pink-600 transition-colors z-10"
+      >
+        ← Back
+      </button>
     </motion.div>
   );
 }
 
-function Credits({ onOpenGift, keyReady }: { onOpenGift: () => void; keyReady: boolean }) {
+function Credits({ onNext, onPrev, keyReady }: { onNext: () => void; onPrev: () => void; keyReady: boolean }) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, y: 50 }}
       className="z-10 flex flex-col items-center p-12 rounded-[3rem] border border-pink-100 max-w-xs w-full relative overflow-hidden mx-6"
       style={{ background: "linear-gradient(160deg, #fff5fb 0%, #ffffff 60%, #fce4ec 100%)", boxShadow: "0 30px 80px -15px rgba(240,98,146,0.2)" }}
     >
-      {/* Easter Egg Trigger */}
-      <motion.div 
-        className="absolute top-4 right-6 cursor-pointer"
-        whileHover={{ scale: 1.1, rotate: 5 }}
-        onClick={onOpenGift}
-      >
-        <Gift className={`w-6 h-6 ${keyReady ? "text-pink-500 animate-bounce" : "text-pink-200"}`} />
-      </motion.div>
       <div className="absolute -top-16 -right-16 w-36 h-36 rounded-full" style={{ background: "radial-gradient(circle, #fce4ec, transparent)", opacity: 0.7 }} />
       <div className="absolute -bottom-16 -left-16 w-36 h-36 rounded-full" style={{ background: "radial-gradient(circle, #fce4ec, transparent)", opacity: 0.5 }} />
 
@@ -1069,15 +1131,176 @@ function Credits({ onOpenGift, keyReady }: { onOpenGift: () => void; keyReady: b
           <p className="text-lg font-black" style={{ color: "#c2185b" }}>Happy Moments 🌸</p>
         </div>
       </div>
-      <motion.div animate={{ y: [0, -6, 0], scale: [1, 1.12, 1] }} transition={{ repeat: Infinity, duration: 2.8 }} className="mt-14">
+
+      <motion.div 
+        animate={{ y: [0, -6, 0], scale: [1, 1.12, 1] }} 
+        transition={{ repeat: Infinity, duration: 2.8 }} 
+        className="mt-14 mb-8"
+      >
         <Heart className="w-12 h-12 drop-shadow-xl" style={{ fill: "#f06292", color: "#f06292" }} />
       </motion.div>
+
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={onNext}
+        className="px-8 py-3 rounded-full font-black uppercase tracking-[0.2em] text-[10px] bg-pink-500 text-white shadow-lg flex items-center gap-2"
+      >
+        {keyReady ? "Buka Kejutan Akhir ✨" : "Selesai ✨"}
+      </motion.button>
+
+      <button 
+        onClick={onPrev}
+        className="mt-4 text-pink-400 font-bold uppercase text-[10px] tracking-widest hover:text-pink-600 transition-colors"
+      >
+        ← Back
+      </button>
+
       <p className="mt-8 text-[8px] font-black uppercase tracking-[0.3em]" style={{ color: "#f48fb1", opacity: 0.5 }}>Built for you with love 💕</p>
     </motion.div>
   );
 }
 
 // ─── Easter Egg Components ──────────────────────────────────────────────────
+
+function SurpriseFinale({ keyReady, onPrev }: { keyReady: boolean; onPrev: () => void }) {
+  const [showModal, setShowModal] = useState(false);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="z-10 flex flex-col items-center justify-center text-center px-6 min-h-[60vh]"
+    >
+      <motion.div
+        animate={keyReady ? { 
+          y: [0, -20, 0],
+          scale: [1, 1.05, 1],
+        } : { 
+          rotate: [0, -1, 1, 0] 
+        }}
+        transition={{ 
+          repeat: Infinity, 
+          duration: keyReady ? 3 : 4, 
+          ease: "easeInOut" 
+        }}
+        className="mb-16 cursor-pointer relative group"
+        onClick={() => setShowModal(true)}
+      >
+        {/* Magic Halo */}
+        <div className="absolute inset-0 bg-pink-200/40 blur-[60px] rounded-full scale-150 animate-pulse" />
+        
+        {/* Treasure Chest Icon (Pink Theme) */}
+        <div className="relative w-40 h-32">
+           {/* Floating Sparkles */}
+           {keyReady && [...Array(6)].map((_, i) => (
+             <motion.div
+               key={i}
+               className="absolute text-pink-300 pointer-events-none"
+               animate={{ 
+                 y: [0, -60], 
+                 x: [0, (i % 2 === 0 ? 30 : -30)], 
+                 opacity: [0, 1, 0],
+                 scale: [0, 1, 0]
+               }}
+               transition={{ 
+                 repeat: Infinity, 
+                 duration: 2 + i * 0.5, 
+                 delay: i * 0.3 
+               }}
+               style={{ top: '20%', left: '45%' }}
+             >
+               <Stars size={12 + i * 2} fill="currentColor" />
+             </motion.div>
+           ))}
+
+           {/* Lid */}
+           <motion.div 
+             className="absolute -top-6 inset-x-0 h-14 bg-gradient-to-b from-pink-300 to-pink-500 rounded-t-2xl border-b-4 border-pink-600 z-20 shadow-lg origin-bottom"
+             animate={keyReady ? { rotateX: [0, -10, 0] } : {}}
+             transition={{ repeat: Infinity, duration: 2 }}
+           >
+              <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_20%_20%,_#fff_1px,_transparent_1px)] bg-[length:12px_12px]" />
+              
+              {/* Lock Mechanism */}
+              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-10 h-10 bg-gradient-to-br from-white to-pink-100 rounded-full border-4 border-pink-400 shadow-xl flex items-center justify-center z-30">
+                 <Key size={18} className="text-pink-600" />
+                 {keyReady && (
+                   <motion.div 
+                     className="absolute inset-0 bg-pink-200 rounded-full -z-10 blur-md"
+                     animate={{ scale: [1, 1.4, 1], opacity: [0.5, 1, 0.5] }}
+                     transition={{ repeat: Infinity, duration: 1.5 }}
+                   />
+                 )}
+              </div>
+           </motion.div>
+
+           {/* Body */}
+           <div className="absolute inset-0 bg-gradient-to-b from-pink-400 to-pink-600 rounded-b-xl border-4 border-pink-600 shadow-2xl overflow-hidden">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,_#fff_1px,_transparent_1px)] opacity-10 bg-[length:12px_12px]" />
+              <div className="absolute inset-y-0 left-6 w-3 bg-white/20" />
+              <div className="absolute inset-y-0 right-6 w-3 bg-white/20" />
+           </div>
+        </div>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+      >
+        <h2 className="text-4xl font-black text-pink-700 mb-4 tracking-tight">
+          {keyReady ? "Harta Karun Hati ✨" : "Masih Terkunci... 🔒"}
+        </h2>
+        <p className="text-pink-600/80 font-bold max-w-sm mb-10 text-lg leading-relaxed">
+          {keyReady 
+            ? "Peti indah ini menunggumu. Gunakan kepingan kunci pink-mu untuk melihat isinya!" 
+            : "Ayo cari semua kepingan kuncinya untuk membuka kejutan spesial ini."}
+        </p>
+
+        {keyReady ? (
+          <motion.button
+            whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(233, 30, 140, 0.2)" }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowModal(true)}
+            className="group px-12 py-5 rounded-full bg-gradient-to-r from-pink-400 to-pink-600 text-white font-black uppercase tracking-[0.2em] shadow-2xl border-2 border-pink-300 relative overflow-hidden"
+          >
+            <span className="relative z-10 flex items-center gap-3">
+              Buka Hadiah <Unlock size={20} className="animate-bounce" />
+            </span>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+          </motion.button>
+        ) : (
+          <div className="inline-flex flex-col items-center gap-4">
+             <div className="h-2 w-48 bg-pink-50 rounded-full overflow-hidden border border-pink-100">
+                <motion.div 
+                  className="h-full bg-pink-400"
+                  initial={{ width: 0 }}
+                  animate={{ width: "0%" }}
+                />
+             </div>
+             <p className="text-pink-400 text-[10px] font-black uppercase tracking-[0.4em]">
+                Terus Mencari Kepingan Kunci
+             </p>
+          </div>
+        )}
+
+        <button 
+          onClick={onPrev}
+          className="mt-12 text-pink-400 font-bold uppercase text-[10px] tracking-widest hover:text-pink-600 transition-colors"
+        >
+          ← Back
+        </button>
+      </motion.div>
+
+      <AnimatePresence>
+        {showModal && (
+          <FinalGiftModal onClose={() => setShowModal(false)} canUnlock={keyReady} />
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
 
 function KeyInventory({ collectedCount, total, reconstructed }: { collectedCount: number; total: number; reconstructed: boolean }) {
   return (
@@ -1098,13 +1321,20 @@ function KeyInventory({ collectedCount, total, reconstructed }: { collectedCount
           )}
         </div>
         <div className="flex flex-col">
-          <p className="text-[8px] font-black uppercase tracking-widest text-pink-400">Fragments</p>
-          <div className="flex gap-1 mt-0.5">
-            {[...Array(total)].map((_, i) => (
+          <p className="text-[8px] font-black uppercase tracking-widest text-pink-400">Key Fragments</p>
+          <div className="flex gap-1.5 mt-1.5">
+            {[1, 2, 3, 4].map((id) => (
               <div 
-                key={i} 
-                className={`w-4 h-1 rounded-full transition-colors duration-500 ${i < collectedCount ? "bg-pink-500" : "bg-pink-100"}`} 
-              />
+                key={id} 
+                className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-700 ${id <= collectedCount ? "bg-pink-100 border-pink-300 border shadow-inner" : "bg-pink-50/50 border-pink-100 border"}`}
+              >
+                <KeyPiece 
+                  id={id} 
+                  size={16} 
+                  isInventory 
+                  className={id <= collectedCount ? "text-pink-500" : "text-pink-200 opacity-50"} 
+                />
+              </div>
             ))}
           </div>
         </div>
@@ -1126,96 +1356,286 @@ function KeyInventory({ collectedCount, total, reconstructed }: { collectedCount
 function FinalGiftModal({ onClose, canUnlock }: { onClose: () => void; canUnlock: boolean }) {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [showContent, setShowContent] = useState(false);
+  const [particles, setParticles] = useState<{ id: number; x: number; y: number; size: number; delay: number }[]>([]);
 
   const handleUnlock = () => {
     if (!canUnlock) return;
-    playSound("https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3", 0.6);
-    setIsUnlocked(true);
-    setTimeout(() => setShowContent(true), 800);
+    
+    // Play sequence sounds
+    playSound("https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3", 0.5); // Insert key
+    
+    setTimeout(() => {
+      playSound("https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3", 0.7); // Open chest
+      setIsUnlocked(true);
+      
+      // Generate pink/white particles
+      setParticles([...Array(25)].map((_, i) => ({
+        id: i,
+        x: (Math.random() - 0.5) * 350,
+        y: -100 - Math.random() * 250,
+        size: Math.random() * 8 + 4,
+        delay: Math.random() * 0.5
+      })));
+
+      setTimeout(() => setShowContent(true), 1500);
+    }, 600);
   };
 
   return (
     <motion.div 
-      className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-pink-900/20 backdrop-blur-xl"
+      className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-pink-900/30 backdrop-blur-2xl"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
       <motion.div 
-        className="bg-white rounded-[3rem] p-10 max-w-sm w-full shadow-2xl relative overflow-hidden flex flex-col items-center text-center"
-        initial={{ scale: 0.8, y: 40 }}
-        animate={{ scale: 1, y: 0 }}
-        exit={{ scale: 0.8, y: 40 }}
+        className="bg-white rounded-[3.5rem] p-12 max-w-xl w-full shadow-[0_50px_100px_-20px_rgba(233,30,140,0.2)] relative overflow-hidden flex flex-col items-center text-center border-2 border-pink-50"
+        initial={{ scale: 0.8, y: 100, rotateX: 20 }}
+        animate={{ scale: 1, y: 0, rotateX: 0 }}
+        exit={{ scale: 0.8, y: 100, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 100, damping: 20 }}
       >
         <button 
           onClick={onClose}
-          className="absolute top-6 right-6 text-pink-300 hover:text-pink-500 transition-colors"
+          className="absolute top-8 right-8 text-pink-300 hover:text-pink-500 transition-colors z-50 p-2 hover:bg-pink-50 rounded-full"
         >
-          ✕
+          <Stars size={24} />
         </button>
 
         {!showContent ? (
           <>
-            <div className="mb-8">
-              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-pink-300 mb-2">Secret Treasury</p>
-              <h2 className="text-3xl font-black text-pink-600">The Grand Prize</h2>
+            <div className="mb-6">
+              <motion.p 
+                animate={{ opacity: [0.5, 1, 0.5] }}
+                transition={{ repeat: Infinity, duration: 2 }}
+                className="text-[11px] font-black uppercase tracking-[0.5em] text-pink-400 mb-3"
+              >
+                Magical Surprise ✨
+              </motion.p>
+              <h2 className="text-4xl font-black text-pink-600 leading-tight">
+                {isUnlocked ? "Terbuka! 🌸" : "Buka Sekarang!"}
+              </h2>
             </div>
 
-            <div className="relative w-48 h-48 flex items-center justify-center mb-10">
-              <motion.div
-                animate={isUnlocked ? { scale: [1, 1.2, 0], rotate: [0, 10, -10, 0], opacity: [1, 1, 0] } : { y: [0, -10, 0] }}
-                transition={{ duration: isUnlocked ? 0.8 : 3, repeat: isUnlocked ? 0 : Infinity }}
-                className="relative z-10"
-              >
-                <Gift size={80} className="text-pink-500 fill-pink-50" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                   <Key size={32} className={`text-pink-600 ${isUnlocked ? "opacity-0" : "animate-pulse"}`} />
-                </div>
-              </motion.div>
-              
+            {/* ═══ REALISTIC CHEST SCENE ═══ */}
+            <div
+              className="relative flex items-end justify-center mb-10"
+              style={{ width: 280, height: 240, perspective: "900px", perspectiveOrigin: "50% 70%" }}
+            >
+              {/* ── Light Rays (shoot upward when open) ── */}
               {isUnlocked && (
-                <motion.div 
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1.5, opacity: 1 }}
-                  className="absolute inset-0 bg-pink-200 rounded-full blur-3xl -z-10"
-                />
+                <div className="absolute inset-0 pointer-events-none z-40 flex items-center justify-center" style={{ top: '20%' }}>
+                  {[...Array(8)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ scaleY: 0, opacity: 0 }}
+                      animate={{ scaleY: 1, opacity: [0, 0.6, 0] }}
+                      transition={{ duration: 1.6, delay: 0.3 + i * 0.07, ease: "easeOut", repeat: Infinity, repeatDelay: 3 }}
+                      className="absolute origin-bottom"
+                      style={{
+                        width: 6,
+                        height: 120 + i * 10,
+                        background: `linear-gradient(to top, rgba(255,182,213,0.9), transparent)`,
+                        transform: `rotate(${-70 + i * 20}deg)`,
+                        bottom: 0,
+                        borderRadius: 4,
+                        filter: "blur(2px)",
+                      }}
+                    />
+                  ))}
+                </div>
               )}
+
+              {/* ── Floating Hearts & Stars out of chest ── */}
+              {isUnlocked && particles.map((p) => (
+                <motion.div
+                  key={p.id}
+                  initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
+                  animate={{ opacity: [0, 1, 0], scale: [0, 1.2, 0], x: p.x * 0.7, y: p.y }}
+                  transition={{ duration: 2.5, delay: 0.4 + p.delay, ease: "easeOut" }}
+                  className="absolute z-50 pointer-events-none"
+                  style={{ bottom: '40%', left: '50%' }}
+                >
+                  {p.id % 3 === 0
+                    ? <Heart size={p.size + 4} className="text-pink-400 fill-pink-300 drop-shadow-[0_0_6px_#f9a8d4]" />
+                    : p.id % 3 === 1
+                    ? <Stars size={p.size + 4} className="text-white fill-white drop-shadow-[0_0_6px_#fff]" />
+                    : <div style={{ width: p.size, height: p.size, borderRadius: '50%', background: 'radial-gradient(circle, #fbcfe8, #f472b6)', boxShadow: '0 0 8px #f9a8d4' }} />
+                  }
+                </motion.div>
+              ))}
+
+              {/* ── CHEST BODY + LID (3D) ── */}
+              <div className="relative" style={{ width: 220, height: 160, transformStyle: "preserve-3d" }}>
+
+                {/* Inner glow inside chest (visible when open) */}
+                {isUnlocked && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: [0, 1, 0.8, 1] }}
+                    transition={{ repeat: Infinity, duration: 2.5, delay: 0.5 }}
+                    className="absolute z-10 rounded-xl overflow-hidden pointer-events-none"
+                    style={{ bottom: 0, left: 6, right: 6, height: 120 }}
+                  >
+                    <div className="w-full h-full" style={{
+                      background: "radial-gradient(ellipse at 50% 80%, #fff 0%, #fce7f3 40%, transparent 80%)",
+                      filter: "blur(4px)"
+                    }} />
+                  </motion.div>
+                )}
+
+                {/* ── LID ── */}
+                <motion.div
+                  className="absolute left-0 right-0 z-20"
+                  style={{
+                    bottom: 100,  // sits on top of body
+                    height: 90,
+                    transformOrigin: "bottom center",
+                    transformStyle: "preserve-3d",
+                  }}
+                  animate={isUnlocked ? {
+                    rotateX: -148,
+                    translateY: -10,
+                  } : {
+                    rotateX: 0,
+                  }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 55,
+                    damping: 10,
+                    delay: isUnlocked ? 0.3 : 0,
+                  }}
+                >
+                  {/* Lid top face */}
+                  <div
+                    className="absolute inset-0 rounded-t-2xl"
+                    style={{
+                      background: "linear-gradient(170deg, #fbcfe8 0%, #f9a8d4 40%, #ec4899 100%)",
+                      boxShadow: "0 -6px 20px rgba(236,72,153,0.3)",
+                      border: "3px solid #db2777",
+                      borderBottom: "none",
+                    }}
+                  >
+                    {/* Lid highlights */}
+                    <div className="absolute inset-x-4 top-2 h-3 rounded-full opacity-40" style={{ background: "linear-gradient(to right, transparent, white, transparent)" }} />
+                    {/* Lid straps */}
+                    <div className="absolute top-0 bottom-0 left-10 w-3 rounded" style={{ background: "rgba(219,39,119,0.3)" }} />
+                    <div className="absolute top-0 bottom-0 right-10 w-3 rounded" style={{ background: "rgba(219,39,119,0.3)" }} />
+                  </div>
+
+                  {/* Lock badge */}
+                  <motion.div
+                    className="absolute -bottom-5 left-1/2 z-30 flex items-center justify-center rounded-full border-4 border-white shadow-xl"
+                    style={{ width: 40, height: 40, marginLeft: -20, background: "linear-gradient(135deg, #fff, #fbcfe8)" }}
+                    animate={isUnlocked ? { rotate: [0, 20, -10, 0], scale: [1, 1.2, 0.9, 1] } : { scale: [1, 1.08, 1] }}
+                    transition={isUnlocked ? { duration: 0.6 } : { repeat: Infinity, duration: 2 }}
+                  >
+                    <Key size={18} className="text-pink-600" />
+                  </motion.div>
+                </motion.div>
+
+                {/* ── BODY ── */}
+                <div
+                  className="absolute bottom-0 left-0 right-0 rounded-b-2xl overflow-hidden"
+                  style={{
+                    height: 120,
+                    background: "linear-gradient(175deg, #f472b6 0%, #ec4899 50%, #db2777 100%)",
+                    border: "3px solid #be185d",
+                    boxShadow: "0 20px 60px -10px rgba(236,72,153,0.45), inset 0 2px 0 rgba(255,255,255,0.3)",
+                  }}
+                >
+                  {/* Body texture dots */}
+                  <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(#fff 1px, transparent 1px)", backgroundSize: "14px 14px" }} />
+                  {/* Body sheen */}
+                  <div className="absolute inset-x-0 top-0 h-6 opacity-25" style={{ background: "linear-gradient(to bottom, white, transparent)" }} />
+                  {/* Body straps */}
+                  <div className="absolute top-0 bottom-0 left-10 w-3 rounded opacity-40" style={{ background: "#be185d" }} />
+                  <div className="absolute top-0 bottom-0 right-10 w-3 rounded opacity-40" style={{ background: "#be185d" }} />
+                  {/* Bottom studs */}
+                  {[20, 100, 180].map(x => (
+                    <div key={x} className="absolute bottom-3 w-3 h-3 rounded-full border-2 border-pink-900/30" style={{ left: x, background: "linear-gradient(135deg,#fff,#fbcfe8)" }} />
+                  ))}
+                </div>
+
+                {/* ── Ground shadow ── */}
+                <motion.div
+                  animate={{ scaleX: isUnlocked ? 1.3 : 1, opacity: isUnlocked ? 0.2 : 0.12 }}
+                  className="absolute -bottom-4 left-1/2 -translate-x-1/2 rounded-full pointer-events-none"
+                  style={{ width: 220, height: 24, background: "radial-gradient(ellipse, #db2777, transparent)", filter: "blur(8px)" }}
+                />
+              </div>
             </div>
 
             <motion.button
-              whileHover={canUnlock ? { scale: 1.05 } : {}}
-              whileTap={canUnlock ? { scale: 0.95 } : {}}
+              whileHover={canUnlock ? { scale: 1.05, y: -2 } : {}}
+              whileTap={canUnlock ? { scale: 0.98 } : {}}
               onClick={handleUnlock}
               disabled={isUnlocked || !canUnlock}
-              className={`px-10 py-4 rounded-full font-black uppercase tracking-widest text-xs flex items-center gap-3 shadow-xl transition-all ${isUnlocked || !canUnlock ? "bg-pink-100 text-pink-300 cursor-not-allowed" : "bg-pink-500 text-white hover:bg-pink-600"}`}
+              className={`group px-16 py-5 rounded-full font-black uppercase tracking-[0.2em] text-sm flex items-center gap-4 shadow-[0_20px_40px_-10px_rgba(233,30,140,0.2)] transition-all border-b-4 relative overflow-hidden ${isUnlocked || !canUnlock ? "bg-pink-50 text-pink-200 border-pink-100 cursor-not-allowed" : "bg-pink-600 text-white border-pink-800 hover:bg-pink-700"}`}
             >
-              {!canUnlock ? <><Key size={16} /> Key Pieces Missing...</> : (isUnlocked ? "Unlocking..." : <><Unlock size={16} /> Use Reconstructed Key</>)}
+              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+              {!canUnlock ? <><Key size={20} /> Kunci Belum Lengkap</> : (isUnlocked ? "Membuka..." : <><Unlock size={20} /> Gunakan Kunci Pink</>)}
             </motion.button>
           </>
         ) : (
           <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="py-6"
+            initial={{ opacity: 0, scale: 0.8, y: 100 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            className="w-full max-w-md bg-white p-8 md:p-14 rounded-3xl shadow-[0_30px_100px_rgba(233,30,140,0.15)] border-4 border-pink-50 relative"
           >
-            <div className="text-6xl mb-6">🏆</div>
-            <h2 className="text-3xl font-black text-pink-600 mb-4">Golden Ticket!</h2>
-            <p className="text-gray-600 font-bold mb-8 leading-relaxed">
-              Selamat! Kamu telah menemukan semua kepingan kunci rahasia. <br/>
-              Kado ini adalah simbol dari kebahagiaan tak terbatas untukmu hari ini dan selamanya! 💖
-            </p>
-            <div className="bg-pink-50 p-6 rounded-2xl border-2 border-pink-100 border-dashed">
-              <p className="text-pink-500 font-black text-sm uppercase tracking-widest mb-1">Voucher Khusus</p>
-              <p className="text-2xl font-black text-pink-700">"Satu Hari Penuh Manja"</p>
-              <p className="text-[10px] text-pink-300 font-bold mt-2 italic">Valid forever for you ✨</p>
+            {/* Wax Seal (Floating) */}
+            <motion.div 
+              animate={{ y: [0, -5, 0], rotate: [-2, 2, -2] }}
+              transition={{ repeat: Infinity, duration: 3 }}
+              className="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-pink-600 rounded-full shadow-2xl flex items-center justify-center border-4 border-white z-10"
+            >
+               <Heart size={36} className="text-white fill-white drop-shadow-md" />
+            </motion.div>
+
+            {/* Letter Content */}
+            <div 
+               className="text-pink-900 text-left space-y-8 leading-relaxed overflow-y-auto max-h-[60vh] pr-4 custom-scrollbar"
+               style={{ fontSize: '17px' }}
+            >
+               <motion.p 
+                 initial={{ opacity: 0, x: -20 }}
+                 animate={{ opacity: 1, x: 0 }}
+                 transition={{ delay: 0.3 }}
+                 className="text-2xl font-black italic mb-8 border-b-2 border-pink-100 pb-4 inline-block text-pink-600"
+               >
+                 Teruntuk kamu,
+               </motion.p>
+               
+               <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}>
+                 Selamat! Kamu sudah berhasil mengumpulkan semua kepingan kunci dan membuka peti rahasia ini. Tapi tahukah kamu? Harta karun yang paling berharga sebenarnya bukanlah kado-kado ini...
+               </motion.p>
+
+               <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }} className="bg-pink-50 p-6 rounded-2xl border-l-4 border-pink-400 italic text-pink-700">
+                 "Harta yang paling indah adalah setiap detik kebersamaan, setiap tawa yang kita bagi, dan keberadaanmu yang selalu mencerahkan duniaku."
+               </motion.p>
+
+               <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }}>
+                 Terima kasih sudah menjadi versi terbaik dari dirimu sendiri. Di hari ulang tahunmu ini, aku berharap kamu mendapatkan kebahagiaan yang tak terbatas, kesehatan yang selalu terjaga, dan cinta yang tak pernah padam.
+               </motion.p>
+
+               <motion.div 
+                 initial={{ opacity: 0, y: 20 }}
+                 animate={{ opacity: 1, y: 0 }}
+                 transition={{ delay: 1.5 }}
+                 className="text-right font-black italic mt-12 pt-8 border-t-2 border-pink-50"
+               >
+                 <p className="text-pink-400 text-sm uppercase tracking-widest mb-2">Salam Hangat,</p>
+                 <p className="text-4xl text-pink-600 font-black">David Adesta</p>
+               </motion.div>
             </div>
+            
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={onClose}
-              className="mt-10 text-pink-400 font-black uppercase text-[10px] tracking-[0.3em] hover:text-pink-600"
+              className="mt-12 text-pink-500 font-black uppercase text-[11px] tracking-[0.5em] hover:text-pink-800 transition-colors px-8 py-3 rounded-full border border-pink-100 hover:bg-pink-50"
             >
-              Close & Keep Treasure
+              Simpan di Hati 🌸
             </motion.button>
           </motion.div>
         )}
