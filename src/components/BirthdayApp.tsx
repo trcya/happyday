@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Stars, ChevronRight, ChevronLeft, Paperclip } from "lucide-react";
+import { Heart, Stars, ChevronRight, ChevronLeft, Paperclip, Key, Gift, Unlock } from "lucide-react";
 
 // Steps: 0 = Landing, 1 = Greeting, 2 = Gallery, 3 = Wishes, 4 = Credits
 
@@ -20,6 +20,9 @@ export default function BirthdayApp() {
   const [step, setStep] = useState(0);
   const bgMusicRef = useRef<HTMLAudioElement | null>(null);
   const [musicStarted, setMusicStarted] = useState(false);
+  const [collectedPieces, setCollectedPieces] = useState<number[]>([]);
+  const [showFinalGift, setShowFinalGift] = useState(false);
+  const [keyReconstructed, setKeyReconstructed] = useState(false);
 
   // Start background music on first user gesture (browser policy)
   const startMusic = useCallback(() => {
@@ -42,6 +45,18 @@ export default function BirthdayApp() {
     setStep((s) => s + 1);
   };
 
+  const collectPiece = (id: number) => {
+    if (collectedPieces.includes(id)) return;
+    playSound("https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3", 0.4);
+    setCollectedPieces(prev => [...prev, id]);
+    
+    if (collectedPieces.length + 1 === 4) {
+      setTimeout(() => {
+        setKeyReconstructed(true);
+      }, 1000);
+    }
+  };
+
   return (
     <div
       className="relative min-h-screen w-full overflow-hidden flex flex-col items-center justify-center selection:bg-pink-200 selection:text-pink-700"
@@ -52,17 +67,25 @@ export default function BirthdayApp() {
       <div className="absolute inset-0 z-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at center, #fce4ec 0%, #ffffff 60%, #fff0f8 100%)", opacity: 0.35 }} />
 
       <AnimatePresence mode="wait">
-        {step === 0 && <Landing key="landing" onNext={nextStep} />}
-        {step === 1 && <Greeting key="greeting" onNext={nextStep} />}
-        {step === 2 && <Gallery key="gallery" onNext={nextStep} />}
-        {step === 3 && <Wishes key="wishes" onNext={nextStep} />}
-        {step === 4 && <Credits key="credits" />}
+        {step === 0 && <Landing key="landing" onNext={nextStep} onCollect={() => collectPiece(1)} collected={collectedPieces.includes(1)} />}
+        {step === 1 && <Greeting key="greeting" onNext={nextStep} onCollect={() => collectPiece(2)} collected={collectedPieces.includes(2)} />}
+        {step === 2 && <Gallery key="gallery" onNext={nextStep} onCollect={() => collectPiece(3)} collected={collectedPieces.includes(3)} />}
+        {step === 3 && <Wishes key="wishes" onNext={nextStep} onCollect={() => collectPiece(4)} collected={collectedPieces.includes(4)} />}
+        {step === 4 && <Credits key="credits" onOpenGift={() => setShowFinalGift(true)} keyReady={keyReconstructed} />}
+      </AnimatePresence>
+
+      <KeyInventory collectedCount={collectedPieces.length} total={4} reconstructed={keyReconstructed} />
+      
+      <AnimatePresence>
+        {showFinalGift && (
+          <FinalGiftModal onClose={() => setShowFinalGift(false)} canUnlock={keyReconstructed} />
+        )}
       </AnimatePresence>
     </div>
   );
 }
 
-function Landing({ onNext }: { onNext: () => void }) {
+function Landing({ onNext, onCollect, collected }: { onNext: () => void; onCollect: () => void; collected: boolean }) {
   const [isOpen, setIsOpen] = useState(false);
   const [petals, setPetals] = useState<{ x: number; size: number; duration: number; delay: number; drift: number }[]>([]);
 
@@ -358,12 +381,26 @@ function Landing({ onNext }: { onNext: () => void }) {
             ))}
           </div>
         </motion.div>
+
+        {/* Hidden Key Piece 1 */}
+        {!collected && (
+          <motion.div
+            className="absolute bottom-10 left-10 z-50 cursor-pointer"
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 0.4, scale: 1, rotate: [0, 15, -15, 0] }}
+            whileHover={{ opacity: 1, scale: 1.2, filter: "drop-shadow(0 0 10px #f06292)" }}
+            transition={{ rotate: { repeat: Infinity, duration: 4 } }}
+            onClick={(e) => { e.stopPropagation(); onCollect(); }}
+          >
+            <Key size={24} className="text-pink-300" />
+          </motion.div>
+        )}
       </div>
     </motion.div>
   );
 }
 
-function Greeting({ onNext }: { onNext: () => void }) {
+function Greeting({ onNext, onCollect, collected }: { onNext: () => void; onCollect: () => void; collected: boolean }) {
   const [isOpened, setIsOpened] = useState(false);
   const [showCake, setShowCake] = useState(false);
   const [isCandleOut, setIsCandleOut] = useState(false);
@@ -609,6 +646,19 @@ function Greeting({ onNext }: { onNext: () => void }) {
             </motion.div>
           </motion.div>
         )}
+
+        {/* Hidden Key Piece 2 */}
+        {!collected && showCake && (
+          <motion.div
+            className="absolute -bottom-4 -right-10 z-50 cursor-pointer"
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 0.5, scale: 1 }}
+            whileHover={{ opacity: 1, scale: 1.2, filter: "drop-shadow(0 0 10px #f06292)" }}
+            onClick={(e) => { e.stopPropagation(); onCollect(); }}
+          >
+            <Key size={20} className="text-pink-200" />
+          </motion.div>
+        )}
       </div>
 
       <AnimatePresence>
@@ -641,7 +691,7 @@ function Greeting({ onNext }: { onNext: () => void }) {
   );
 }
 
-function Gallery({ onNext }: { onNext: () => void }) {
+function Gallery({ onNext, onCollect, collected }: { onNext: () => void; onCollect: () => void; collected: boolean }) {
   const [index, setIndex] = useState(0);
   const images = [
     { src: "https://images.unsplash.com/photo-1582206684807-fcf870f2f359?q=80&w=800&auto=format&fit=crop", caption: "Our first adventure! 🐱✨" },
@@ -740,6 +790,17 @@ function Gallery({ onNext }: { onNext: () => void }) {
         {/* Small decorations on polaroid */}
         <div className="absolute bottom-3 right-4 opacity-50 text-xl drop-shadow-sm">🐾</div>
         <div className="absolute top-4 left-4 opacity-40 text-lg drop-shadow-sm">✨</div>
+
+        {/* Hidden Key Piece 3 */}
+        {!collected && (
+          <motion.div
+            className="absolute top-2 right-2 z-50 cursor-pointer opacity-30"
+            whileHover={{ opacity: 1, scale: 1.2 }}
+            onClick={(e) => { e.stopPropagation(); onCollect(); }}
+          >
+            <Key size={16} className="text-pink-300" />
+          </motion.div>
+        )}
       </div>
 
       <motion.button
@@ -760,7 +821,7 @@ function Gallery({ onNext }: { onNext: () => void }) {
   );
 }
 
-function Wishes({ onNext }: { onNext: () => void }) {
+function Wishes({ onNext, onCollect, collected }: { onNext: () => void; onCollect: () => void; collected: boolean }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const messages = [
     { 
@@ -940,6 +1001,17 @@ function Wishes({ onNext }: { onNext: () => void }) {
                     </motion.div>
                   </div>
                 )}
+
+                {/* Hidden Key Piece 4 - Only on the 3rd note */}
+                {!collected && index === 2 && (
+                   <motion.div
+                    className="absolute top-1/2 right-4 z-50 cursor-pointer opacity-40"
+                    whileHover={{ opacity: 1, scale: 1.2 }}
+                    onClick={(e) => { e.stopPropagation(); onCollect(); }}
+                  >
+                    <Key size={18} className="text-pink-400" />
+                  </motion.div>
+                )}
               </motion.div>
             );
           })}
@@ -965,7 +1037,7 @@ function Wishes({ onNext }: { onNext: () => void }) {
   );
 }
 
-function Credits() {
+function Credits({ onOpenGift, keyReady }: { onOpenGift: () => void; keyReady: boolean }) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
@@ -973,6 +1045,14 @@ function Credits() {
       className="z-10 flex flex-col items-center p-12 rounded-[3rem] border border-pink-100 max-w-xs w-full relative overflow-hidden mx-6"
       style={{ background: "linear-gradient(160deg, #fff5fb 0%, #ffffff 60%, #fce4ec 100%)", boxShadow: "0 30px 80px -15px rgba(240,98,146,0.2)" }}
     >
+      {/* Easter Egg Trigger */}
+      <motion.div 
+        className="absolute top-4 right-6 cursor-pointer"
+        whileHover={{ scale: 1.1, rotate: 5 }}
+        onClick={onOpenGift}
+      >
+        <Gift className={`w-6 h-6 ${keyReady ? "text-pink-500 animate-bounce" : "text-pink-200"}`} />
+      </motion.div>
       <div className="absolute -top-16 -right-16 w-36 h-36 rounded-full" style={{ background: "radial-gradient(circle, #fce4ec, transparent)", opacity: 0.7 }} />
       <div className="absolute -bottom-16 -left-16 w-36 h-36 rounded-full" style={{ background: "radial-gradient(circle, #fce4ec, transparent)", opacity: 0.5 }} />
 
@@ -993,6 +1073,153 @@ function Credits() {
         <Heart className="w-12 h-12 drop-shadow-xl" style={{ fill: "#f06292", color: "#f06292" }} />
       </motion.div>
       <p className="mt-8 text-[8px] font-black uppercase tracking-[0.3em]" style={{ color: "#f48fb1", opacity: 0.5 }}>Built for you with love 💕</p>
+    </motion.div>
+  );
+}
+
+// ─── Easter Egg Components ──────────────────────────────────────────────────
+
+function KeyInventory({ collectedCount, total, reconstructed }: { collectedCount: number; total: number; reconstructed: boolean }) {
+  return (
+    <div className="fixed top-6 left-6 z-[100] flex flex-col gap-2">
+      <motion.div 
+        className="bg-white/70 backdrop-blur-md border border-pink-200 p-3 rounded-2xl shadow-lg flex items-center gap-3"
+        initial={{ x: -100, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+      >
+        <div className="relative">
+          <Key className={`w-5 h-5 ${reconstructed ? "text-pink-500" : "text-pink-200"}`} />
+          {reconstructed && (
+            <motion.div 
+              className="absolute inset-0 bg-pink-400 rounded-full blur-md -z-10"
+              animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0.8, 0.5] }}
+              transition={{ repeat: Infinity, duration: 2 }}
+            />
+          )}
+        </div>
+        <div className="flex flex-col">
+          <p className="text-[8px] font-black uppercase tracking-widest text-pink-400">Fragments</p>
+          <div className="flex gap-1 mt-0.5">
+            {[...Array(total)].map((_, i) => (
+              <div 
+                key={i} 
+                className={`w-4 h-1 rounded-full transition-colors duration-500 ${i < collectedCount ? "bg-pink-500" : "bg-pink-100"}`} 
+              />
+            ))}
+          </div>
+        </div>
+      </motion.div>
+      
+      {reconstructed && (
+        <motion.p 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-[9px] font-black text-pink-500 uppercase tracking-widest bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-full border border-pink-200 shadow-sm self-start"
+        >
+          Key Reconstructed! Find the gift 🎁
+        </motion.p>
+      )}
+    </div>
+  );
+}
+
+function FinalGiftModal({ onClose, canUnlock }: { onClose: () => void; canUnlock: boolean }) {
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [showContent, setShowContent] = useState(false);
+
+  const handleUnlock = () => {
+    if (!canUnlock) return;
+    playSound("https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3", 0.6);
+    setIsUnlocked(true);
+    setTimeout(() => setShowContent(true), 800);
+  };
+
+  return (
+    <motion.div 
+      className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-pink-900/20 backdrop-blur-xl"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <motion.div 
+        className="bg-white rounded-[3rem] p-10 max-w-sm w-full shadow-2xl relative overflow-hidden flex flex-col items-center text-center"
+        initial={{ scale: 0.8, y: 40 }}
+        animate={{ scale: 1, y: 0 }}
+        exit={{ scale: 0.8, y: 40 }}
+      >
+        <button 
+          onClick={onClose}
+          className="absolute top-6 right-6 text-pink-300 hover:text-pink-500 transition-colors"
+        >
+          ✕
+        </button>
+
+        {!showContent ? (
+          <>
+            <div className="mb-8">
+              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-pink-300 mb-2">Secret Treasury</p>
+              <h2 className="text-3xl font-black text-pink-600">The Grand Prize</h2>
+            </div>
+
+            <div className="relative w-48 h-48 flex items-center justify-center mb-10">
+              <motion.div
+                animate={isUnlocked ? { scale: [1, 1.2, 0], rotate: [0, 10, -10, 0], opacity: [1, 1, 0] } : { y: [0, -10, 0] }}
+                transition={{ duration: isUnlocked ? 0.8 : 3, repeat: isUnlocked ? 0 : Infinity }}
+                className="relative z-10"
+              >
+                <Gift size={80} className="text-pink-500 fill-pink-50" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                   <Key size={32} className={`text-pink-600 ${isUnlocked ? "opacity-0" : "animate-pulse"}`} />
+                </div>
+              </motion.div>
+              
+              {isUnlocked && (
+                <motion.div 
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1.5, opacity: 1 }}
+                  className="absolute inset-0 bg-pink-200 rounded-full blur-3xl -z-10"
+                />
+              )}
+            </div>
+
+            <motion.button
+              whileHover={canUnlock ? { scale: 1.05 } : {}}
+              whileTap={canUnlock ? { scale: 0.95 } : {}}
+              onClick={handleUnlock}
+              disabled={isUnlocked || !canUnlock}
+              className={`px-10 py-4 rounded-full font-black uppercase tracking-widest text-xs flex items-center gap-3 shadow-xl transition-all ${isUnlocked || !canUnlock ? "bg-pink-100 text-pink-300 cursor-not-allowed" : "bg-pink-500 text-white hover:bg-pink-600"}`}
+            >
+              {!canUnlock ? <><Key size={16} /> Key Pieces Missing...</> : (isUnlocked ? "Unlocking..." : <><Unlock size={16} /> Use Reconstructed Key</>)}
+            </motion.button>
+          </>
+        ) : (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="py-6"
+          >
+            <div className="text-6xl mb-6">🏆</div>
+            <h2 className="text-3xl font-black text-pink-600 mb-4">Golden Ticket!</h2>
+            <p className="text-gray-600 font-bold mb-8 leading-relaxed">
+              Selamat! Kamu telah menemukan semua kepingan kunci rahasia. <br/>
+              Kado ini adalah simbol dari kebahagiaan tak terbatas untukmu hari ini dan selamanya! 💖
+            </p>
+            <div className="bg-pink-50 p-6 rounded-2xl border-2 border-pink-100 border-dashed">
+              <p className="text-pink-500 font-black text-sm uppercase tracking-widest mb-1">Voucher Khusus</p>
+              <p className="text-2xl font-black text-pink-700">"Satu Hari Penuh Manja"</p>
+              <p className="text-[10px] text-pink-300 font-bold mt-2 italic">Valid forever for you ✨</p>
+            </div>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={onClose}
+              className="mt-10 text-pink-400 font-black uppercase text-[10px] tracking-[0.3em] hover:text-pink-600"
+            >
+              Close & Keep Treasure
+            </motion.button>
+          </motion.div>
+        )}
+      </motion.div>
     </motion.div>
   );
 }
