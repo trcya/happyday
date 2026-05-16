@@ -10,8 +10,8 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "Happy Birthday! 🎀",
-  description: "A special birthday surprise made with love 💖",
+  title: "Happy Birthday Cipa! 🤍",
+  description: "Pesan spesial dari kak abil khusus untuk cipa 🎀",
 };
 
 export default function RootLayout({

@@ -1,19 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fff5f9;
-  --foreground: #c2185b;
-  --color-pink-primary: #f06292;
-  --color-pink-light: #f48fb1;
-  --color-pink-soft: #fce4ec;
-  --color-pink-pale: #fdf2f7;
-  --color-pink-deep: #e91e8c;
-  --pink-primary: #f06292;
-  --pink-light: #f48fb1;
-  --pink-soft: #fce4ec;
-  --pink-pale: #fdf2f7;
-  --pink-deep: #e91e8c;
+  --background: #fff8e1; /* Deeper Cream */
+  --foreground: #d81b60; /* Soft Deep Pink */
+  --color-pink-primary: #ffb7c5; /* Pastel Pink */
+  --color-pink-light: #ffd1dc; /* Lighter Pastel Pink */
+  --color-pink-soft: #fff0f5; /* Lavender Blush */
+  --color-pink-pale: #fef3c7; /* More Cream (Amber 100) */
+  --color-pink-deep: #f06292; /* Soft Deep Pink */
+  --pink-primary: #ffb7c5;
+  --pink-light: #ffd1dc;
+  --pink-soft: #fff0f5;
+  --pink-pale: #fef3c7;
+  --pink-deep: #f06292;
   --font-sans: var(--font-nunito), 'Nunito', 'Quicksand', sans-serif;
+  
+  --shadow-premium: 0 20px 40px -10px rgba(216, 27, 96, 0.15);
+  --shadow-soft: 0 10px 25px -5px rgba(216, 27, 96, 0.1);
 }
 
 /* ─── Android / Mobile Smoothness ───────────────────────── */
@@ -26,6 +29,7 @@
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
+  height: 100%;
 }
 
 body {
@@ -36,6 +40,8 @@ body {
   -webkit-overflow-scrolling: touch;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
 }
 
 /* Force GPU compositing on animated containers */
@@ -47,14 +53,22 @@ body {
 }
 
 .bg-glass {
-  background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: var(--shadow-soft);
+}
+
+.bg-glass-pink {
+  background: rgba(255, 183, 197, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .text-gradient {
-  background: linear-gradient(135deg, #f06292, #f48fb1, #e91e8c);
+  background: linear-gradient(135deg, #d81b60, #f06292, #ffb7c5);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -62,7 +76,7 @@ body {
 
 @keyframes bounce-slow {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-14px); }
+  50% { transform: translateY(-10px); }
 }
 
 .animate-bounce-slow {
@@ -84,6 +98,26 @@ body {
 .custom-scrollbar::-webkit-scrollbar { width: 4px; }
 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #f48fb1;
+  background: #ffb7c5;
   border-radius: 999px;
+}
+
+/* Responsive Mobile Container */
+.app-container {
+  max-width: 500px;
+  width: 100%;
+  margin: 0 auto;
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .app-container {
+    max-width: 600px;
+  }
 }
